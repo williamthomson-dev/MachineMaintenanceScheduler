@@ -1,4 +1,4 @@
-using MachineMaintenanceScheduler.Components;
+using MachineMaintenanceScheduler;
 
 var builder = WebApplication.CreateBuilder(args);
 

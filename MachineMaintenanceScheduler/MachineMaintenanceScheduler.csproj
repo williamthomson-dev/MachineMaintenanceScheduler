@@ -6,4 +6,12 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Features\Default\Components\" />
+    <Folder Include="Features\Technicians\Components\" />
+    <Folder Include="Features\Technicians\Models\" />
+    <Folder Include="Features\Technicians\Validators\" />
+    <Folder Include="Features\Technicians\Services\" />
+  </ItemGroup>
+
 </Project>
