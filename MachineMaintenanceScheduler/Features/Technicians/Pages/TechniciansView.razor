@@ -1,6 +1,62 @@
 ﻿@page "/techniciansView"
+@using MachineMaintenanceScheduler.Features.Technicians.Interface
+@using MachineMaintenanceScheduler.Features.Technicians.Models
+@attribute [StreamRendering]
+@rendermode InteractiveServer
 
 <PageTitle>Technicians</PageTitle>
 
 <h1>Technicians</h1>
 
+@if (!technicians.Any())
+{
+    <p>No technicians available.</p>
+}
+else
+{
+    @foreach (var technician in technicians)
+    {
+        @technician.FullName
+        <ul>
+            @if (technician.Skills != null && technician.Skills.Any())
+            {
+                @foreach (var skill in technician.Skills)
+                {
+                    <li>
+                        @skill.Name
+                    </li>
+                }
+            }
+        </ul>
+    }
+}
+
+@code {
+
+    #region Variables
+    private List<Technician> technicians = new();
+    #endregion
+
+    #region Injected Services
+    [Inject] public ITechnicianService _technicianService { get; set; } = default!;
+    #endregion
+
+    #region Lifecycle Methods
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadTechniciansAsync();
+    }
+
+    #endregion
+
+    #region Data Loading 
+
+    private async Task LoadTechniciansAsync()
+    {
+        technicians = await Task.FromResult(_technicianService.GetTechnicians());
+    }
+
+    #endregion
+
+}

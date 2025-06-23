@@ -1,10 +1,17 @@
 using MachineMaintenanceScheduler;
+using MachineMaintenanceScheduler.Features.Skills.Interfaces;
+using MachineMaintenanceScheduler.Features.Skills.Services;
+using MachineMaintenanceScheduler.Features.Technicians.Interface;
+using MachineMaintenanceScheduler.Features.Technicians.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddScoped<ITechnicianService, TechnicianService>();
+builder.Services.AddScoped<ISkillService, SkillService>();
 
 var app = builder.Build();
 
