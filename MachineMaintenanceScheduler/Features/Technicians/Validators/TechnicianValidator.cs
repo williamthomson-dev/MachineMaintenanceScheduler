@@ -22,7 +22,7 @@ namespace MachineMaintenanceScheduler.Features.Technicians.Validators
             if (string.IsNullOrWhiteSpace(technician.Number))
                 errors.Add("Contact number cannot be empty.");
 
-            if (technician.Skills == null || !technician.Skills.Any())
+            if (technician.SkillIds == null || !technician.SkillIds.Any())
                 errors.Add("Technician must have at least one skill.");
 
             return errors.Any()

@@ -2,89 +2,65 @@
 using MachineMaintenanceScheduler.Features.Skills.Models;
 using MachineMaintenanceScheduler.Features.Technicians.Interface;
 using MachineMaintenanceScheduler.Features.Technicians.Models;
+using MachineMaintenanceScheduler.Features.Technicians.ViewModels;
 
 namespace MachineMaintenanceScheduler.Features.Technicians.Services
 {
     public class TechnicianService : ITechnicianService
     {
-        private readonly List<Technician> _technicians;
-        private readonly ISkillService _skillService;
+        private readonly ITechnicianRepository _technicianRepository;
+        private readonly ISkillRepository _skillRepository;
 
-        public TechnicianService(ISkillService skillService)
+        public TechnicianService(ITechnicianRepository technicianRepository, ISkillRepository skillRepository)
         {
-            _skillService = skillService;
-            _technicians = new List<Technician>
+            _technicianRepository = technicianRepository;
+            _skillRepository = skillRepository;
+        }
+
+        public async Task<List<TechnicianWithSkillsViewModel>> GetTechniciansWithSkillsAsync()
+        {
+            var technicians = await _technicianRepository.GetAllAsync();
+            var skills = await _skillRepository.GetAllSkillsAsync();
+
+            var result = technicians.Select(t => new TechnicianWithSkillsViewModel
             {
-                new Technician
-                {
-                    Id = Guid.NewGuid(),
-                    Forename = "Douglas",
-                    Surname = "Butcher",
-                    Number = "07987654321",
-                    Skills = new List<Skill>
-                    {
-                        _skillService.GetSkillByName("Electrical")!,
-                        _skillService.GetSkillByName("Mechanical")!
-                    }
-                },
-                new Technician
-                {
-                    Id = Guid.NewGuid(),
-                    Forename = "James",
-                    Surname = "Walker",
-                    Number = "071234567890",
-                    Skills = new List<Skill>
-                    {
-                        _skillService.GetSkillByName("Hydraulic")!,
-                        _skillService.GetSkillByName("Pneumatic")!
-                    }
-                }
-            };
+                Id = t.Id,
+                Forename = t.Forename,
+                Surname = t.Surname,
+                Number = t.Number,
+                IsActive = t.IsActive,
+                SkillNames = skills
+                    .Where(s => t.SkillIds.Contains(s.Id))
+                    .Select(s => s.Name)
+                    .ToList()
+            }).ToList();
+
+            return result;
         }
 
-        public List<Technician> GetTechnicians()
+        public async Task<List<Technician>> GetAllTechniciansAsync()
         {
-            return _technicians;
+            return await _technicianRepository.GetAllAsync();
         }
 
-        public Technician? GetTechnicianById(Guid id)
+        public async Task<Technician?> GetTechnicianByIdAsync(Guid id)
         {
-            Technician? technician = _technicians.FirstOrDefault(t => t.Id == id);
-            if (technician == null)
-                return null;
-             
-            return technician;
+            return await _technicianRepository.GetByIdAsync(id);
         }
 
-        public void CreateTechnician(Technician technician)
+        public async Task CreateTechnicianAsync(Technician technician)
         {
-            _technicians.Add(technician);
+            await _technicianRepository.AddAsync(technician);
         }
 
-        public void UpdateTechnician(Technician technician)
+        public async Task UpdateTechnicianAsync(Technician technician)
         {
-            Technician? existingTechnician = _technicians.FirstOrDefault(t => t.Id == technician.Id);
-            if (existingTechnician != null)
-            {
-                existingTechnician.Forename = technician.Forename;
-                existingTechnician.Surname = technician.Surname;
-                existingTechnician.Number = technician.Number;
-                existingTechnician.Skills = technician.Skills;
-                existingTechnician.IsActive = technician.IsActive;
-            }
-            else
-            {
-                throw new KeyNotFoundException("Technician not found.");
-            }
+            await _technicianRepository.UpdateAsync(technician);
         }
 
-        public void DeleteTechnician(Guid id)
+        public async Task DeleteTechnicianAsync(Guid id)
         {
-            Technician? technician = _technicians.FirstOrDefault(t => t.Id == id);
-            if (technician != null)
-            {
-                _technicians.Remove(technician);
-            }
+            await _technicianRepository.DeleteAsync(id);
         }
 
     }

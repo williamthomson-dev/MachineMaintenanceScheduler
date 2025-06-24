@@ -6,7 +6,9 @@ namespace MachineMaintenanceScheduler.Features.Skills.Services
     public class SkillService : ISkillService
     {
         private readonly List<Skill> _skills;
-        public SkillService()
+        private readonly ISkillRepository _skillRepository;
+
+        public SkillService(ISkillRepository skillRepository)
         {
             // Initialize with some default skills for demonstration purposes
             _skills = new List<Skill>
@@ -16,27 +18,23 @@ namespace MachineMaintenanceScheduler.Features.Skills.Services
                 new Skill { Id = Guid.NewGuid(), Name = "Hydraulic" },
                 new Skill { Id = Guid.NewGuid(), Name = "Pneumatic" }
             };
-        }
-        public List<Skill> GetAllSkills()
-        {
-            return _skills;
-        }
 
-        public Skill? GetSkillByName(string name)
+            _skillRepository = skillRepository;
+
+        }
+        public async Task<List<Skill>> GetAllSkillsAsync()
         {
-            return _skills.FirstOrDefault(s => s.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+            return await _skillRepository.GetAllSkillsAsync();
         }
 
-        public Skill CreateSkill(string name)
+        public Task<Skill?> GetSkillByIdAsync(Guid Id)
         {
-            var skill = new Skill 
-            { 
-                Id = Guid.NewGuid(), 
-                Name = name 
-            };
+            return _skillRepository.GetSkillByIdAsync(Id);
+        }
 
-            _skills.Add(skill);
-            return skill;
+        public async Task CreateSkillAsync(Skill skill)
+        {
+            await _skillRepository.AddSkillAsync(skill);
         }
 
     }

@@ -1,6 +1,7 @@
 ﻿@page "/techniciansView"
 @using MachineMaintenanceScheduler.Features.Technicians.Interface
 @using MachineMaintenanceScheduler.Features.Technicians.Models
+@using MachineMaintenanceScheduler.Features.Technicians.ViewModels
 @attribute [StreamRendering]
 @rendermode InteractiveServer
 
@@ -16,14 +17,14 @@ else
 {
     @foreach (var technician in technicians)
     {
-        @technician.FullName
+        @technician.Forename @technician.Surname
         <ul>
-            @if (technician.Skills != null && technician.Skills.Any())
+            @if (technician.SkillNames != null && technician.SkillNames.Any())
             {
-                @foreach (var skill in technician.Skills)
+                @foreach (var skillName in technician.SkillNames)
                 {
                     <li>
-                        @skill.Name
+                        @skillName
                     </li>
                 }
             }
@@ -34,7 +35,7 @@ else
 @code {
 
     #region Variables
-    private List<Technician> technicians = new();
+    private List<TechnicianWithSkillsViewModel> technicians = new();
     #endregion
 
     #region Injected Services
@@ -54,7 +55,7 @@ else
 
     private async Task LoadTechniciansAsync()
     {
-        technicians = await Task.FromResult(_technicianService.GetTechnicians());
+        technicians = await _technicianService.GetTechniciansWithSkillsAsync();
     }
 
     #endregion

@@ -4,8 +4,8 @@ namespace MachineMaintenanceScheduler.Features.Skills.Interfaces
 {
     public interface ISkillService
     {
-        List<Skill> GetAllSkills(); 
-        Skill? GetSkillByName(string name); 
-        Skill CreateSkill(string name); 
+        Task<List<Skill>> GetAllSkillsAsync(); 
+        Task<Skill?> GetSkillByIdAsync(Guid Id); 
+        Task CreateSkillAsync(Skill skill); 
     }
 }

@@ -1,7 +1,9 @@
 using MachineMaintenanceScheduler;
 using MachineMaintenanceScheduler.Features.Skills.Interfaces;
+using MachineMaintenanceScheduler.Features.Skills.Repositories;
 using MachineMaintenanceScheduler.Features.Skills.Services;
 using MachineMaintenanceScheduler.Features.Technicians.Interface;
+using MachineMaintenanceScheduler.Features.Technicians.Repositories;
 using MachineMaintenanceScheduler.Features.Technicians.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,7 +13,9 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddScoped<ITechnicianService, TechnicianService>();
+builder.Services.AddScoped<ITechnicianRepository, InMemoryTechnicianRepository>();
 builder.Services.AddScoped<ISkillService, SkillService>();
+builder.Services.AddScoped<ISkillRepository, InMemorySkillRepository>();
 
 var app = builder.Build();
 
