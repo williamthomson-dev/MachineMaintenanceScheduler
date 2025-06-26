@@ -5,6 +5,8 @@
 @using MachineMaintenanceScheduler.Features.Technicians.Interface
 @using MachineMaintenanceScheduler.Features.Technicians.Models
 @using MachineMaintenanceScheduler.Features.Technicians.ViewModels
+@using MachineMaintenanceScheduler.Shared.Components
+@using MachineMaintenanceScheduler.Shared.Modals
 @attribute [StreamRendering]
 @rendermode InteractiveServer
 
@@ -12,13 +14,13 @@
 
 <h1>Technicians</h1>
 
+<button class="btn btn-primary btn-sm" @onclick="() => ShowAddModal()">Add</button>
 @if (!technicians.Any())
 {
     <p>No technicians available.</p>
 }
 else
 {
-    <button class="btn btn-primary btn-sm" @onclick="() => ShowAddModal()">Add</button>
 
     <table class="table table-striped">
         <thead>
@@ -76,6 +78,12 @@ else
                   OnClose="CloseDeleteModal"
                   OnDelete="HandleTechnicianDeleted" />
 
+<ToastMessageModal IsVisible="@isToastVisible"
+            Title="Missing Skills"
+            Message="@toastMessage"
+            Type="ToastType.Warning"
+            OnClose="() => isToastVisible = false" />
+
 
 @code {
 
@@ -83,9 +91,13 @@ else
     private List<Technician> technicians = new();
     private Technician? selectedTechnician = new();
     private List<Skill> skills = new();
+
     private bool isAddTechnicianVisible = false;
     private bool isUpdateTechnicianVisible = false;
     private bool isDeleteTechnicianVisible = false;
+    private bool isToastVisible;
+
+    private string toastMessage = "";
     #endregion
 
     #region Injected Services
@@ -115,7 +127,10 @@ else
     #region Add Technician Modal
     private void ShowAddModal()
     {
-        isAddTechnicianVisible = true;
+        if (!skills.Any())
+            ShowToastMessage("Please add skills before adding technicians.");
+        else
+            isAddTechnicianVisible = true;
     }
 
     private void CloseAddModal() => isAddTechnicianVisible = false;
@@ -128,10 +143,18 @@ else
     #endregion
 
     #region Edit Technician Modal
+
     private void ShowUpdateModal(Technician technician)
     {
-        selectedTechnician = technician;
-        isUpdateTechnicianVisible = true;
+        if (!skills.Any())
+        {
+            ShowToastMessage("Please add skills before updating technicians.");
+        }
+        else
+        {
+            selectedTechnician = technician;
+            isUpdateTechnicianVisible = true;
+        }
     }
 
     private void CloseUpdateModal() => isUpdateTechnicianVisible = false;
@@ -160,4 +183,14 @@ else
     }
     #endregion
 
+
+    #region Toast Message
+
+    private void ShowToastMessage(string message)
+    {
+        toastMessage = message;
+        isToastVisible = true;
+    }
+
+    #endregion
 }

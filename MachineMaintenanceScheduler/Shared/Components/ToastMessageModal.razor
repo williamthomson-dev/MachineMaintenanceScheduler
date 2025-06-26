@@ -1,0 +1,30 @@
+﻿@using MachineMaintenanceScheduler.Shared.Modals
+@using MachineMaintenanceScheduler.Shared.Layout
+
+<Modal Title="@Title" IsVisible="@IsVisible" OnClose="OnClose">
+    <ChildContent>
+        <div class="alert @AlertClass">
+            @Message
+        </div>
+    </ChildContent>
+    <FooterContent>
+        <button class="btn btn-secondary" @onclick="OnClose">OK</button>
+    </FooterContent>
+</Modal>
+
+
+@code {
+    [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public string Title { get; set; } = "Title";
+    [Parameter] public string Message { get; set; } = "Something happened.";
+    [Parameter] public ToastType Type { get; set; } = ToastType.Info;
+    [Parameter] public EventCallback OnClose { get; set; }
+
+    private string AlertClass => Type switch
+    {
+        ToastType.Error => "alert alert-danger",
+        ToastType.Warning => "alert alert-warning",
+        ToastType.Success => "alert alert-success",
+        _ => "alert alert-info"
+    };
+}

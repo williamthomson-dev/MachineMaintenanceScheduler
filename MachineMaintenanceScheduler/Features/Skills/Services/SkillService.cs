@@ -5,23 +5,13 @@ namespace MachineMaintenanceScheduler.Features.Skills.Services
 {
     public class SkillService : ISkillService
     {
-        private readonly List<Skill> _skills;
         private readonly ISkillRepository _skillRepository;
 
         public SkillService(ISkillRepository skillRepository)
         {
-            // Initialize with some default skills for demonstration purposes
-            _skills = new List<Skill>
-            {
-                new Skill { Id = Guid.NewGuid(), Name = "Electrical" },
-                new Skill { Id = Guid.NewGuid(), Name = "Mechanical" },
-                new Skill { Id = Guid.NewGuid(), Name = "Hydraulic" },
-                new Skill { Id = Guid.NewGuid(), Name = "Pneumatic" }
-            };
-
             _skillRepository = skillRepository;
-
         }
+
         public async Task<List<Skill>> GetAllSkillsAsync()
         {
             return await _skillRepository.GetAllSkillsAsync();
