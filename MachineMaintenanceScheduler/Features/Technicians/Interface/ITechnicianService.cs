@@ -11,6 +11,6 @@ namespace MachineMaintenanceScheduler.Features.Technicians.Interface
         Task UpdateTechnicianAsync(Technician technician);
         Task DeleteTechnicianAsync(Guid id);
 
-        Task<List<TechnicianWithSkillsViewModel>> GetTechniciansWithSkillsAsync();
+        Task<List<Technician>> GetTechniciansWithSkillsAsync();
     }
 }

@@ -17,26 +17,25 @@ namespace MachineMaintenanceScheduler.Features.Technicians.Services
             _skillRepository = skillRepository;
         }
 
-        public async Task<List<TechnicianWithSkillsViewModel>> GetTechniciansWithSkillsAsync()
+        public async Task<List<Technician>> GetTechniciansWithSkillsAsync()
         {
             var technicians = await _technicianRepository.GetAllAsync();
             var skills = await _skillRepository.GetAllSkillsAsync();
 
-            var result = technicians.Select(t => new TechnicianWithSkillsViewModel
+            var result = technicians.Select(t => new Technician
             {
                 Id = t.Id,
                 Forename = t.Forename,
                 Surname = t.Surname,
                 Number = t.Number,
                 IsActive = t.IsActive,
-                SkillNames = skills
-                    .Where(s => t.SkillIds.Contains(s.Id))
-                    .Select(s => s.Name)
-                    .ToList()
+                SkillId = t.SkillId,
+                Skill = skills.FirstOrDefault(s => s.Id == t.SkillId)
             }).ToList();
 
             return result;
         }
+
 
         public async Task<List<Technician>> GetAllTechniciansAsync()
         {

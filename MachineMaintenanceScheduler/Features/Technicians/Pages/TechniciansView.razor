@@ -1,4 +1,7 @@
 ﻿@page "/techniciansView"
+@using MachineMaintenanceScheduler.Features.Skills.Interfaces
+@using MachineMaintenanceScheduler.Features.Skills.Models
+@using MachineMaintenanceScheduler.Features.Technicians.Components
 @using MachineMaintenanceScheduler.Features.Technicians.Interface
 @using MachineMaintenanceScheduler.Features.Technicians.Models
 @using MachineMaintenanceScheduler.Features.Technicians.ViewModels
@@ -15,31 +18,79 @@
 }
 else
 {
-    @foreach (var technician in technicians)
-    {
-        @technician.Forename @technician.Surname
-        <ul>
-            @if (technician.SkillNames != null && technician.SkillNames.Any())
+    <button class="btn btn-primary btn-sm" @onclick="() => ShowAddModal()">Add</button>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Number</th>
+                <th>Is Active</th>
+                <th>Skills</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var technician in technicians)
             {
-                @foreach (var skillName in technician.SkillNames)
-                {
-                    <li>
-                        @skillName
-                    </li>
-                }
+                <tr>
+                    <td>@technician.FullName</td>
+                    <td>@technician.Number</td>
+                    <td>@(technician.IsActive ? "Yes" : "No")</td>
+                    <td>
+                        @if (technician.Skill != null)
+                        {
+                            if (technician.Skill.Name.Any())
+                            {
+                                <span class="badge bg-primary">@technician.Skill.Name</span>
+                            }
+                        }
+                        else
+                        {
+                            <em>No skills</em>
+                        }
+                    </td>
+                    <td>
+                        <button class="btn btn-info btn-sm" @onclick="() => ShowUpdateModal(technician)">Edit</button>
+                        <button class="btn btn-danger btn-sm" @onclick="() => ShowDeleteModal(technician)">Delete</button>
+                    </td>
+                </tr>
             }
-        </ul>
-    }
+        </tbody>
+    </table>
 }
+
+<AddTechnician IsVisible="@isAddTechnicianVisible"
+               AllSkills="skills" 
+               OnClose="CloseAddModal"
+               OnAdd="HandleTechnicianAdd" />
+
+<EditTechnician IsVisible="@isUpdateTechnicianVisible"
+                TechnicianToEdit="selectedTechnician"
+                AllSkills="skills"
+                OnClose="CloseUpdateModal"
+                OnUpdate="HandleTechnicianUpdated" />
+
+<DeleteTechnician IsVisible="@isDeleteTechnicianVisible"
+                  Technician="selectedTechnician"
+                  OnClose="CloseDeleteModal"
+                  OnDelete="HandleTechnicianDeleted" />
+
 
 @code {
 
     #region Variables
-    private List<TechnicianWithSkillsViewModel> technicians = new();
+    private List<Technician> technicians = new();
+    private Technician? selectedTechnician = new();
+    private List<Skill> skills = new();
+    private bool isAddTechnicianVisible = false;
+    private bool isUpdateTechnicianVisible = false;
+    private bool isDeleteTechnicianVisible = false;
     #endregion
 
     #region Injected Services
     [Inject] public ITechnicianService _technicianService { get; set; } = default!;
+    [Inject] public ISkillService _skillService { get; set; } = default!;
     #endregion
 
     #region Lifecycle Methods
@@ -56,8 +107,57 @@ else
     private async Task LoadTechniciansAsync()
     {
         technicians = await _technicianService.GetTechniciansWithSkillsAsync();
+        skills = await _skillService.GetAllSkillsAsync();
     }
 
+    #endregion
+
+    #region Add Technician Modal
+    private void ShowAddModal()
+    {
+        isAddTechnicianVisible = true;
+    }
+
+    private void CloseAddModal() => isAddTechnicianVisible = false;
+
+    private async Task HandleTechnicianAdd(Technician addTechnician)
+    {
+        await _technicianService.CreateTechnicianAsync(addTechnician);
+        await LoadTechniciansAsync();
+    }
+    #endregion
+
+    #region Edit Technician Modal
+    private void ShowUpdateModal(Technician technician)
+    {
+        selectedTechnician = technician;
+        isUpdateTechnicianVisible = true;
+    }
+
+    private void CloseUpdateModal() => isUpdateTechnicianVisible = false;
+
+    private async Task HandleTechnicianUpdated(Technician updatedTechnician)
+    {
+        await _technicianService.UpdateTechnicianAsync(updatedTechnician);
+        await LoadTechniciansAsync();
+    }
+    #endregion
+
+
+    #region Delete Technician Modal
+    private void ShowDeleteModal(Technician technician)
+    {
+        selectedTechnician = technician;
+        isDeleteTechnicianVisible = true;
+    }
+
+    private void CloseDeleteModal() => isDeleteTechnicianVisible = false;
+
+    private async Task HandleTechnicianDeleted(Technician deletedTechnician)
+    {
+        await _technicianService.DeleteTechnicianAsync(deletedTechnician.Id);
+        await LoadTechniciansAsync();
+    }
     #endregion
 
 }

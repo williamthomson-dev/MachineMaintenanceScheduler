@@ -1,0 +1,89 @@
+﻿@using MachineMaintenanceScheduler.Features.Skills.Models
+@using MachineMaintenanceScheduler.Features.Technicians.Interface
+@using MachineMaintenanceScheduler.Features.Technicians.Models
+@using MachineMaintenanceScheduler.Shared.Layout
+
+<Modal Title="Add Technician"
+       IsVisible="@IsVisible"
+       OnClose="OnClose">
+    <ChildContent>
+        @if (!string.IsNullOrWhiteSpace(validationError))
+        {
+            <div class="alert alert-danger">@validationError</div>
+        }
+
+        <label>Forename:</label>
+        <input class="form-control" @bind="Technician.Forename" />
+
+        <label>Surname:</label>
+        <input class="form-control" @bind="Technician.Surname" />
+
+        <label>Number:</label>
+        <input class="form-control" @bind="Technician.Number" />
+
+        @if (AllSkills.Any())
+        {
+            <label>Skill:</label>
+            <select class="form-select" @bind="Technician.SkillId">
+                @foreach (var skill in AllSkills)
+                {
+                    <option value="@skill.Id">@skill.Name</option>
+                }
+            </select>
+        }
+
+
+    </ChildContent>
+
+    <FooterContent>
+        <button class="btn btn-primary" @onclick="ConfirmAdd">Save</button>
+        <button class="btn btn-secondary" @onclick="OnClose">Cancel</button>
+    </FooterContent>
+</Modal>
+
+@code {
+    [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public List<Skill> AllSkills { get; set; } = new();
+    [Parameter] public EventCallback OnClose { get; set; }
+    [Parameter] public EventCallback<Technician> OnAdd { get; set; }
+
+    private Technician Technician { get; set; } = new();
+    private string? validationError;
+
+    [Inject] public ITechnicianValidator _technicianValidator { get; set; } = default!;
+
+    protected override void OnParametersSet()
+    {
+        if (IsVisible)
+        {
+            ResetForm();
+        }
+    }
+
+    private void ResetForm()
+    {
+        Technician = new Technician
+        {
+            Id = Guid.NewGuid(),
+            Forename = "",
+            Surname = "",
+            IsActive = true
+        };
+    }
+
+    private async Task ConfirmAdd()
+    {
+        var result = _technicianValidator.ValidateTechnician(Technician);
+        if (!result.IsValid)
+        {
+            validationError = result.GetFormattedErrors();
+            return;
+        }
+
+        validationError = null;
+
+        await OnAdd.InvokeAsync(Technician);
+        await OnClose.InvokeAsync();
+    }
+
+}

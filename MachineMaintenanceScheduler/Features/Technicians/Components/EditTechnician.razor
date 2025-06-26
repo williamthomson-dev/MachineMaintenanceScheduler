@@ -1,0 +1,72 @@
+﻿@using MachineMaintenanceScheduler.Features.Skills.Models
+@using MachineMaintenanceScheduler.Features.Technicians.Models
+@using MachineMaintenanceScheduler.Shared.Layout
+
+<Modal Title="Update Technician"
+       IsVisible="@IsVisible"
+       OnClose="OnClose">
+    <ChildContent>
+        <label>Forename:</label>
+        <input class="form-control" @bind="EditableTechnician.Forename" />
+        <label>Surname:</label>
+        <input class="form-control" @bind="EditableTechnician.Surname" />
+        <label>Number:</label>
+        <input class="form-control" @bind="EditableTechnician.Number" />
+
+        <label>Skill:</label>
+        <select class="form-select" @bind="EditableTechnician.SkillId">
+            @foreach (var skill in AllSkills)
+            {
+                <option value="@skill.Id">@skill.Name</option>
+            }
+        </select>
+
+        <label>Is Active:</label>
+        <input class="form-check-input" type="checkbox" @bind="EditableTechnician.IsActive" />
+
+    </ChildContent>
+
+    <FooterContent>
+        <button class="btn btn-primary" @onclick="ConfirmUpdate">Save</button>
+        <button class="btn btn-secondary" @onclick="OnClose">Cancel</button>
+    </FooterContent>
+</Modal>
+
+
+
+@code {
+    [Parameter] public bool IsVisible { get; set; }
+
+    [Parameter] public Technician TechnicianToEdit { get; set; } = new();
+    [Parameter] public List<Skill> AllSkills { get; set; } = new();
+    [Parameter] public EventCallback OnClose { get; set; }
+    [Parameter] public EventCallback<Technician> OnUpdate { get; set; }
+
+    private Technician EditableTechnician { get; set; } = new();
+
+
+    protected override void OnParametersSet()
+    {
+        if (TechnicianToEdit is not null)
+        {
+            // Clone to avoid 2-way binding issues before Save
+            EditableTechnician = new Technician 
+            {
+                Id = TechnicianToEdit.Id,
+                Forename = TechnicianToEdit.Forename,
+                Surname = TechnicianToEdit.Surname,
+                Number = TechnicianToEdit.Number,
+                IsActive = TechnicianToEdit.IsActive,
+                SkillId = TechnicianToEdit.SkillId
+            };
+        }
+    }
+
+
+
+    private async Task ConfirmUpdate()
+    {
+        await OnUpdate.InvokeAsync(EditableTechnician);
+        await OnClose.InvokeAsync();
+    }
+}

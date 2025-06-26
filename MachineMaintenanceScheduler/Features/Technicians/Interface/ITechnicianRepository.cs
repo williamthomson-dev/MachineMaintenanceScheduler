@@ -9,8 +9,5 @@ namespace MachineMaintenanceScheduler.Features.Technicians.Interface
         Task AddAsync(Technician technician);
         Task UpdateAsync(Technician technician);
         Task DeleteAsync(Guid id);
-
-
-
     }
 }
