@@ -7,6 +7,7 @@
 @using MachineMaintenanceScheduler.Features.Technicians.ViewModels
 @using MachineMaintenanceScheduler.Shared.Components
 @using MachineMaintenanceScheduler.Shared.Modals
+@using MachineMaintenanceScheduler.Shared.Services
 @attribute [StreamRendering]
 @rendermode InteractiveServer
 
@@ -79,10 +80,9 @@ else
                   OnDelete="HandleTechnicianDeleted" />
 
 <ToastMessageModal IsVisible="@isToastVisible"
-            Title="Missing Skills"
             Message="@toastMessage"
-            Type="ToastType.Warning"
-            OnClose="() => isToastVisible = false" />
+            ToastType="ToastType.Warning"
+            />
 
 
 @code {
@@ -103,6 +103,7 @@ else
     #region Injected Services
     [Inject] public ITechnicianService _technicianService { get; set; } = default!;
     [Inject] public ISkillService _skillService { get; set; } = default!;
+    [Inject] public IToastService _toastService { get; set; } = default!;
     #endregion
 
     #region Lifecycle Methods
@@ -128,7 +129,7 @@ else
     private void ShowAddModal()
     {
         if (!skills.Any())
-            ShowToastMessage("Please add skills before adding technicians.");
+            _toastService.ShowToastMessage("Please add skills before adding technicians.", ToastType.Warning);
         else
             isAddTechnicianVisible = true;
     }
@@ -148,7 +149,7 @@ else
     {
         if (!skills.Any())
         {
-            ShowToastMessage("Please add skills before updating technicians.");
+            _toastService.ShowToastMessage("Please add skills before updating technicians.", ToastType.Warning);
         }
         else
         {
@@ -183,14 +184,4 @@ else
     }
     #endregion
 
-
-    #region Toast Message
-
-    private void ShowToastMessage(string message)
-    {
-        toastMessage = message;
-        isToastVisible = true;
-    }
-
-    #endregion
 }

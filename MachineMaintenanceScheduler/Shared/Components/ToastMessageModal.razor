@@ -1,30 +1,51 @@
 ﻿@using MachineMaintenanceScheduler.Shared.Modals
 @using MachineMaintenanceScheduler.Shared.Layout
+@using MachineMaintenanceScheduler.Shared.Services
 
-<Modal Title="@Title" IsVisible="@IsVisible" OnClose="OnClose">
-    <ChildContent>
-        <div class="alert @AlertClass">
-            @Message
-        </div>
-    </ChildContent>
-    <FooterContent>
-        <button class="btn btn-secondary" @onclick="OnClose">OK</button>
-    </FooterContent>
-</Modal>
+@if (IsVisible)
+{
+    <Modal Title="@ToastType.ToString()"
+           IsVisible="true"
+           OnClose="OnClose">
+        <ChildContent>
+            <div class="alert @GetCssClass()">@Message</div>
+        </ChildContent>
 
+        <FooterContent>
+            <button class="btn btn-secondary" @onclick="OnClose">Close</button>
+        </FooterContent>
+    </Modal>
+}
 
 @code {
-    [Parameter] public bool IsVisible { get; set; }
-    [Parameter] public string Title { get; set; } = "Title";
-    [Parameter] public string Message { get; set; } = "Something happened.";
-    [Parameter] public ToastType Type { get; set; } = ToastType.Info;
-    [Parameter] public EventCallback OnClose { get; set; }
+    [Parameter] public bool IsVisible { get; set; } = false;
+    [Parameter] public string Message { get; set; } = string.Empty;
+    [Parameter] public ToastType ToastType { get; set; }
 
-    private string AlertClass => Type switch
+    [Inject] private IToastService _toastService { get; set; } = default!;
+
+    protected override void OnInitialized()
     {
-        ToastType.Error => "alert alert-danger",
-        ToastType.Warning => "alert alert-warning",
-        ToastType.Success => "alert alert-success",
-        _ => "alert alert-info"
+        _toastService.OnShow += Show;
+    }
+
+    private void Show(string lMessage, ToastType lToastType)
+    {
+        Message = lMessage;
+        ToastType = lToastType;
+        IsVisible = true;
+        StateHasChanged();
+
+    }
+
+    private void OnClose() => IsVisible = false;
+
+    
+    private string GetCssClass() => ToastType switch
+    {
+        ToastType.Success => "alert-success",
+        ToastType.Warning => "alert-warning",
+        ToastType.Error => "alert-danger",
+        _ => "alert-info"
     };
 }

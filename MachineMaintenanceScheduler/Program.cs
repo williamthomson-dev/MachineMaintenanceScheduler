@@ -6,6 +6,7 @@ using MachineMaintenanceScheduler.Features.Technicians.Interface;
 using MachineMaintenanceScheduler.Features.Technicians.Repositories;
 using MachineMaintenanceScheduler.Features.Technicians.Services;
 using MachineMaintenanceScheduler.Features.Technicians.Validators;
+using MachineMaintenanceScheduler.Shared.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +19,8 @@ builder.Services.AddScoped<ITechnicianValidator, TechnicianValidator>();
 builder.Services.AddSingleton<ITechnicianRepository, InMemoryTechnicianRepository>();
 builder.Services.AddScoped<ISkillService, SkillService>();
 builder.Services.AddSingleton<ISkillRepository, InMemorySkillRepository>();
+builder.Services.AddScoped<IToastService, ToastService>();
+
 
 var app = builder.Build();
 
