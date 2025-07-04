@@ -1,4 +1,7 @@
 using MachineMaintenanceScheduler;
+using MachineMaintenanceScheduler.Features.Machines.Interfaces;
+using MachineMaintenanceScheduler.Features.Machines.Repositories;
+using MachineMaintenanceScheduler.Features.Machines.Services;
 using MachineMaintenanceScheduler.Features.Skills.Interfaces;
 using MachineMaintenanceScheduler.Features.Skills.Repositories;
 using MachineMaintenanceScheduler.Features.Skills.Services;
@@ -22,6 +25,10 @@ builder.Services.AddSingleton<ITechnicianRepository, InMemoryTechnicianRepositor
 builder.Services.AddScoped<ISkillService, SkillService>();
 builder.Services.AddScoped<ISkillValidator, SkillValidator>();
 builder.Services.AddSingleton<ISkillRepository, InMemorySkillRepository>();
+
+builder.Services.AddScoped<IMachineService, MachineService>();
+builder.Services.AddSingleton<IMachineRepository, InMemoryMachineRepository>();
+
 
 builder.Services.AddScoped<IToastService, ToastService>();
 

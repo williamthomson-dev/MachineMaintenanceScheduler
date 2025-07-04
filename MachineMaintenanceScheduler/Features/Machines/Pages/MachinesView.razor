@@ -1,0 +1,71 @@
+﻿@page "/machinesView"
+@using MachineMaintenanceScheduler.Features.Machines.Interfaces
+@using MachineMaintenanceScheduler.Features.Machines.Models
+@using MachineMaintenanceScheduler.Features.Skills.Components
+@using MachineMaintenanceScheduler.Features.Skills.Interfaces
+@using MachineMaintenanceScheduler.Features.Skills.Models
+@using MachineMaintenanceScheduler.Shared.Components
+@using MachineMaintenanceScheduler.Shared.Modals
+@using MachineMaintenanceScheduler.Shared.Services
+@attribute [StreamRendering]
+@rendermode InteractiveServer
+
+<PageTitle>Machines</PageTitle>
+
+<h1>Machines</h1>
+
+@if (!machines.Any())
+{
+    <p>No machines available.</p>
+}
+else
+{
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var machine in machines)
+            {
+                <tr>
+                    <td>@machine.Name</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+
+
+
+@code {
+
+    #region Variables
+    private List<Machine> machines = new();
+    #endregion
+
+    #region Injected Services
+    [Inject] public IMachineService _machineService { get; set; } = default!;
+    #endregion
+
+    #region Lifecycle Methods
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadSkillsAsync();
+    }
+
+    #endregion
+
+    #region Data Loading
+
+    private async Task LoadSkillsAsync()
+    {
+        machines = await _machineService.GetAllMachinesAsync();
+    }
+
+    #endregion
+}
