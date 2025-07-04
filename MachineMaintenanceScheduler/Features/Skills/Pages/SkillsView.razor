@@ -1,0 +1,161 @@
+﻿@page "/skillsView"
+@using MachineMaintenanceScheduler.Features.Skills.Components
+@using MachineMaintenanceScheduler.Features.Skills.Interfaces
+@using MachineMaintenanceScheduler.Features.Skills.Models
+@using MachineMaintenanceScheduler.Shared.Components
+@using MachineMaintenanceScheduler.Shared.Modals
+@using MachineMaintenanceScheduler.Shared.Services
+@attribute [StreamRendering]
+@rendermode InteractiveServer
+
+<PageTitle>Skills</PageTitle>
+
+<h1>Skills</h1>
+
+<button class="btn btn-primary btn-sm" @onclick="() => ShowAddModal()">Add</button>
+@if (!skills.Any())
+{
+    <p>No skills available.</p>
+}
+else
+{
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var skill in skills)
+            {
+                <tr>
+                    <td>@skill.Name</td>
+                    <td>
+                        <button class="btn btn-info btn-sm" @onclick="() => ShowUpdateModal(skill)">Edit</button>
+                        <button class="btn btn-danger btn-sm" @onclick="() => ShowDeleteModal(skill)">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<AddSkill IsVisible="@isAddSkillVisible"
+               OnClose="CloseAddModal"
+               OnAdd="HandleSkillAdd" />
+
+<EditSkill IsVisible="@isUpdateSkillVisible"
+                SkillToEdit="selectedSkill"
+                OnClose="CloseUpdateModal"
+                OnUpdate="HandleSkillUpdated" />
+
+<DeleteSkill IsVisible="@isDeleteSkillVisible"
+                  Skill="selectedSkill"
+                  OnClose="CloseDeleteModal"
+                  OnDelete="HandleSkillDeleted" />
+
+<ToastMessageModal IsVisible="@isToastVisible"
+            Message="@toastMessage"
+            ToastType="ToastType.Warning"
+            />
+
+
+@code {
+
+    #region Variables
+    private List<Skill> skills = new();
+    private Skill? selectedSkill = new();
+
+    private bool isAddSkillVisible = false;
+    private bool isUpdateSkillVisible = false;
+    private bool isDeleteSkillVisible = false;
+    private bool isToastVisible;
+
+    private string toastMessage = "";
+    #endregion
+
+    #region Injected Services
+    [Inject] public ISkillService _skillService { get; set; } = default!;
+    [Inject] public IToastService _toastService { get; set; } = default!;
+    #endregion
+
+    #region Lifecycle Methods
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadSkillsAsync();
+    }
+
+    #endregion
+
+    #region Data Loading 
+
+    private async Task LoadSkillsAsync()
+    {
+        skills = await _skillService.GetAllSkillsAsync();
+    }
+
+    #endregion
+
+    #region Add Skill Modal
+    private void ShowAddModal()
+    {
+        if (!skills.Any())
+            _toastService.ShowToastMessage("Please add skills before adding skills.", ToastType.Warning);
+        else
+            isAddSkillVisible = true;
+    }
+
+    private void CloseAddModal() => isAddSkillVisible = false;
+
+    private async Task HandleSkillAdd(Skill addSkill)
+    {
+        await _skillService.CreateSkillAsync(addSkill);
+        await LoadSkillsAsync();
+    }
+    #endregion
+
+    #region Edit Skill Modal
+
+    private void ShowUpdateModal(Skill skill)
+    {
+        if (!skills.Any())
+        {
+            _toastService.ShowToastMessage("Please add skills before updating Skills.", ToastType.Warning);
+        }
+        else
+        {
+            selectedSkill = skill;
+            isUpdateSkillVisible = true;
+        }
+    }
+
+    private void CloseUpdateModal() => isUpdateSkillVisible = false;
+
+    private async Task HandleSkillUpdated(Skill updatedSkill)
+    {
+        await _skillService.UpdateSkillAsync(updatedSkill);
+        await LoadSkillsAsync();
+    }
+    #endregion
+
+
+    #region Delete Skill Modal
+    private void ShowDeleteModal(Skill skill)
+    {
+        selectedSkill = skill;
+        isDeleteSkillVisible = true;
+    }
+
+    private void CloseDeleteModal() => isDeleteSkillVisible = false;
+
+    private async Task HandleSkillDeleted(Skill deletedSkill)
+    {
+        await _skillService.DeleteSkillAsync(deletedSkill.Id);
+        await LoadSkillsAsync();
+    }
+    #endregion
+
+}

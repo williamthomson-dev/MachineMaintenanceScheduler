@@ -1,0 +1,34 @@
+﻿@using MachineMaintenanceScheduler.Features.Skills.Interfaces
+@using MachineMaintenanceScheduler.Features.Skills.Models
+@using MachineMaintenanceScheduler.Shared.Layout
+
+<Modal Title="Delete Skill"
+       IsVisible="@IsVisible"
+       OnClose="OnClose">
+    <ChildContent>
+        <label>Are you sure you wish to delete?</label>
+        <label>@Skill.Name</label>
+    </ChildContent>
+
+    <FooterContent>
+        <button class="btn btn-primary" @onclick="ConfirmDelete">Delete</button>
+        <button class="btn btn-secondary" @onclick="OnClose">Cancel</button>
+    </FooterContent>
+</Modal>
+
+
+@code {
+    [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+    [Parameter] public EventCallback<Skill> OnDelete { get; set; }
+    [Parameter] public Skill Skill { get; set; } = new();
+
+
+    [Inject] public ISkillService _skillService { get; set; } = default!;
+
+    private async Task ConfirmDelete()
+    {
+        await OnDelete.InvokeAsync(Skill);
+        await OnClose.InvokeAsync();
+    }
+}

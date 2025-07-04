@@ -27,5 +27,14 @@ namespace MachineMaintenanceScheduler.Features.Skills.Services
             await _skillRepository.AddSkillAsync(skill);
         }
 
+        public Task UpdateSkillAsync(Skill skill)
+        {
+            return _skillRepository.UpdateSkillAsync(skill);
+        }
+
+        public Task DeleteSkillAsync(Guid id)
+        {
+            return _skillRepository.DeleteSkillAsync(id);
+        }
     }
 }

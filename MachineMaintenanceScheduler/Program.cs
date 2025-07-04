@@ -2,6 +2,7 @@ using MachineMaintenanceScheduler;
 using MachineMaintenanceScheduler.Features.Skills.Interfaces;
 using MachineMaintenanceScheduler.Features.Skills.Repositories;
 using MachineMaintenanceScheduler.Features.Skills.Services;
+using MachineMaintenanceScheduler.Features.Skills.Validators;
 using MachineMaintenanceScheduler.Features.Technicians.Interface;
 using MachineMaintenanceScheduler.Features.Technicians.Repositories;
 using MachineMaintenanceScheduler.Features.Technicians.Services;
@@ -17,8 +18,11 @@ builder.Services.AddRazorComponents()
 builder.Services.AddScoped<ITechnicianService, TechnicianService>();
 builder.Services.AddScoped<ITechnicianValidator, TechnicianValidator>();
 builder.Services.AddSingleton<ITechnicianRepository, InMemoryTechnicianRepository>();
+
 builder.Services.AddScoped<ISkillService, SkillService>();
+builder.Services.AddScoped<ISkillValidator, SkillValidator>();
 builder.Services.AddSingleton<ISkillRepository, InMemorySkillRepository>();
+
 builder.Services.AddScoped<IToastService, ToastService>();
 
 
