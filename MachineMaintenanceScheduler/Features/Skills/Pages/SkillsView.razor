@@ -56,11 +56,6 @@ else
                   OnClose="CloseDeleteModal"
                   OnDelete="HandleSkillDeleted" />
 
-<ToastMessageModal IsVisible="@isToastVisible"
-            Message="@toastMessage"
-            ToastType="ToastType.Warning"
-            />
-
 
 @code {
 
@@ -71,9 +66,7 @@ else
     private bool isAddSkillVisible = false;
     private bool isUpdateSkillVisible = false;
     private bool isDeleteSkillVisible = false;
-    private bool isToastVisible;
 
-    private string toastMessage = "";
     #endregion
 
     #region Injected Services
@@ -102,10 +95,7 @@ else
     #region Add Skill Modal
     private void ShowAddModal()
     {
-        if (!skills.Any())
-            _toastService.ShowToastMessage("Please add skills before adding skills.", ToastType.Warning);
-        else
-            isAddSkillVisible = true;
+        isAddSkillVisible = true;
     }
 
     private void CloseAddModal() => isAddSkillVisible = false;
@@ -121,15 +111,8 @@ else
 
     private void ShowUpdateModal(Skill skill)
     {
-        if (!skills.Any())
-        {
-            _toastService.ShowToastMessage("Please add skills before updating Skills.", ToastType.Warning);
-        }
-        else
-        {
-            selectedSkill = skill;
-            isUpdateSkillVisible = true;
-        }
+        selectedSkill = skill;
+        isUpdateSkillVisible = true;
     }
 
     private void CloseUpdateModal() => isUpdateSkillVisible = false;

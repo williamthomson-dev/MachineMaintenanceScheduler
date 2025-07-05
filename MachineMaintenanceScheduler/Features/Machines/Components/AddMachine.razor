@@ -1,8 +1,8 @@
-﻿@using MachineMaintenanceScheduler.Features.Skills.Interfaces
-@using MachineMaintenanceScheduler.Features.Skills.Models
+﻿@using MachineMaintenanceScheduler.Features.Machines.Interfaces
+@using MachineMaintenanceScheduler.Features.Machines.Models
 @using MachineMaintenanceScheduler.Shared.Layout
 
-<Modal Title="Add Skill"
+<Modal Title="Add Machine"
        IsVisible="@IsVisible"
        OnClose="OnClose">
     <ChildContent>
@@ -12,7 +12,7 @@
         }
 
         <label>Name:</label>
-        <input class="form-control" @bind="Skill.Name" />
+        <input class="form-control" @bind="Machine.Name" />
 
     </ChildContent>
 
@@ -25,12 +25,12 @@
 @code {
     [Parameter] public bool IsVisible { get; set; }
     [Parameter] public EventCallback OnClose { get; set; }
-    [Parameter] public EventCallback<Skill> OnAdd { get; set; }
+    [Parameter] public EventCallback<Machine> OnAdd { get; set; }
 
-    private Skill Skill { get; set; } = new();
+    private Machine Machine { get; set; } = new();
     private string? validationError;
 
-    [Inject] public ISkillValidator _skillValidator { get; set; } = default!;
+    [Inject] public IMachineValidator _machineValidator { get; set; } = default!;
 
     protected override void OnParametersSet()
     {
@@ -44,7 +44,7 @@
     {
         validationError = null;
 
-        Skill = new Skill
+        Machine = new Machine
         {
             Id = Guid.NewGuid(),
             Name = ""
@@ -53,7 +53,7 @@
 
     private async Task ConfirmAdd()
     {
-        var result = _skillValidator.ValidateSkill(Skill);
+        var result = _machineValidator.ValidateMachine(Machine);
         if (!result.IsValid)
         {
             validationError = result.GetFormattedErrors();
@@ -62,7 +62,7 @@
 
         validationError = null;
 
-        await OnAdd.InvokeAsync(Skill);
+        await OnAdd.InvokeAsync(Machine);
         await OnClose.InvokeAsync();
     }
 

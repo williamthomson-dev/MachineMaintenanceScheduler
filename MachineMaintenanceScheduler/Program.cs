@@ -2,6 +2,7 @@ using MachineMaintenanceScheduler;
 using MachineMaintenanceScheduler.Features.Machines.Interfaces;
 using MachineMaintenanceScheduler.Features.Machines.Repositories;
 using MachineMaintenanceScheduler.Features.Machines.Services;
+using MachineMaintenanceScheduler.Features.Machines.Validators;
 using MachineMaintenanceScheduler.Features.Skills.Interfaces;
 using MachineMaintenanceScheduler.Features.Skills.Repositories;
 using MachineMaintenanceScheduler.Features.Skills.Services;
@@ -27,6 +28,7 @@ builder.Services.AddScoped<ISkillValidator, SkillValidator>();
 builder.Services.AddSingleton<ISkillRepository, InMemorySkillRepository>();
 
 builder.Services.AddScoped<IMachineService, MachineService>();
+builder.Services.AddScoped<IMachineValidator, MachineValidator>();
 builder.Services.AddSingleton<IMachineRepository, InMemoryMachineRepository>();
 
 
