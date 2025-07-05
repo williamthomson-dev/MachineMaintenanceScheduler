@@ -1,7 +1,7 @@
 ﻿using MachineMaintenanceScheduler.Features.Technicians.Models;
 using MachineMaintenanceScheduler.Features.Technicians.ViewModels;
 
-namespace MachineMaintenanceScheduler.Features.Technicians.Interface
+namespace MachineMaintenanceScheduler.Features.Technicians.Interfaces
 {
     public interface ITechnicianService
     {

@@ -1,5 +1,5 @@
 ﻿using MachineMaintenanceScheduler.Features.Skills.Models;
-using MachineMaintenanceScheduler.Features.Technicians.Interface;
+using MachineMaintenanceScheduler.Features.Technicians.Interfaces;
 using MachineMaintenanceScheduler.Features.Technicians.Models;
 
 namespace MachineMaintenanceScheduler.Features.Technicians.Repositories

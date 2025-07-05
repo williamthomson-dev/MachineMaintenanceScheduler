@@ -1,6 +1,6 @@
 ﻿using MachineMaintenanceScheduler.Features.Skills.Interfaces;
 using MachineMaintenanceScheduler.Features.Skills.Models;
-using MachineMaintenanceScheduler.Features.Technicians.Interface;
+using MachineMaintenanceScheduler.Features.Technicians.Interfaces;
 using MachineMaintenanceScheduler.Features.Technicians.Models;
 using MachineMaintenanceScheduler.Features.Technicians.ViewModels;
 

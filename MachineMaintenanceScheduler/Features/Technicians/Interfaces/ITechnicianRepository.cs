@@ -1,6 +1,6 @@
 ﻿using MachineMaintenanceScheduler.Features.Technicians.Models;
 
-namespace MachineMaintenanceScheduler.Features.Technicians.Interface
+namespace MachineMaintenanceScheduler.Features.Technicians.Interfaces
 {
     public interface ITechnicianRepository
     {

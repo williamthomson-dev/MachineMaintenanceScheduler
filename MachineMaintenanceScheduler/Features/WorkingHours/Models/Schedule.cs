@@ -7,3 +7,4 @@
         public List<ScheduleBlock> ScheduleBlocks { get; set; } = new();
     }
 }
+    

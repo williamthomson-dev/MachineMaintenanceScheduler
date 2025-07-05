@@ -2,7 +2,7 @@
 @using MachineMaintenanceScheduler.Features.Skills.Interfaces
 @using MachineMaintenanceScheduler.Features.Skills.Models
 @using MachineMaintenanceScheduler.Features.Technicians.Components
-@using MachineMaintenanceScheduler.Features.Technicians.Interface
+@using MachineMaintenanceScheduler.Features.Technicians.Interfaces
 @using MachineMaintenanceScheduler.Features.Technicians.Models
 @using MachineMaintenanceScheduler.Features.Technicians.ViewModels
 @using MachineMaintenanceScheduler.Shared.Components
@@ -81,8 +81,7 @@ else
 
 <ToastMessageModal IsVisible="@isToastVisible"
             Message="@toastMessage"
-            ToastType="ToastType.Warning"
-            />
+            ToastType="ToastType.Warning" />
 
 
 @code {
