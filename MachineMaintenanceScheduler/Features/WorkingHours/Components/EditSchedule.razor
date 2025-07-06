@@ -1,0 +1,66 @@
+﻿@using MachineMaintenanceScheduler.Features.WorkingHours.Interfaces
+@using MachineMaintenanceScheduler.Features.WorkingHours.Models
+@using MachineMaintenanceScheduler.Shared.Layout
+
+<Modal Title="Update Schedule"
+       IsVisible="@IsVisible"
+       OnClose="OnClose">
+    <ChildContent>
+        @if (!string.IsNullOrWhiteSpace(validationError))
+        {
+            <div class="alert alert-danger">@validationError</div>
+        }
+
+        <label>Name:</label>
+        <input class="form-control" @bind="EditableSchedule.Name" />
+    </ChildContent>
+
+    <FooterContent>
+        <button class="btn btn-primary" @onclick="ConfirmUpdate">Save</button>
+        <button class="btn btn-secondary" @onclick="OnClose">Cancel</button>
+    </FooterContent>
+</Modal>
+
+
+
+@code {
+    [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public Schedule ScheduleToEdit { get; set; } = new();
+    [Parameter] public EventCallback OnClose { get; set; }
+    [Parameter] public EventCallback<Schedule> OnUpdate { get; set; }
+
+    private Schedule EditableSchedule { get; set; } = new();
+    private string? validationError;
+
+    // [Inject] public IScheduleValidator _ScheduleValidator { get; set; } = default!;
+
+    protected override void OnParametersSet()
+    {
+        validationError = null;
+
+        if (ScheduleToEdit is not null)
+        {
+            // Clone to avoid 2-way binding issues before Save
+            EditableSchedule = new Schedule
+            {
+                Id = ScheduleToEdit.Id,
+                Name = ScheduleToEdit.Name
+            };
+        }
+    }
+
+    private async Task ConfirmUpdate()
+    {
+        // var result = _ScheduleValidator.ValidateSchedule(EditableSchedule);
+        // if (!result.IsValid)
+        // {
+        //     validationError = result.GetFormattedErrors();
+        //     return;
+        // }
+
+        // validationError = null;
+
+        await OnUpdate.InvokeAsync(EditableSchedule);
+        await OnClose.InvokeAsync();
+    }
+}

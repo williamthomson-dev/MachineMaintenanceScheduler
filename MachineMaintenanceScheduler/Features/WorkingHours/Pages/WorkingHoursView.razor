@@ -1,0 +1,119 @@
+@page "/workingHoursView"
+@using MachineMaintenanceScheduler.Features.WorkingHours.Components
+@using MachineMaintenanceScheduler.Features.WorkingHours.Models
+@using MachineMaintenanceScheduler.Features.WorkingHours.Interfaces
+@using MachineMaintenanceScheduler.Shared.Components
+@using MachineMaintenanceScheduler.Shared.Modals
+@using MachineMaintenanceScheduler.Shared.Services
+@attribute [StreamRendering]
+@rendermode InteractiveServer
+
+<PageTitle>Working Hours</PageTitle>
+
+<h1>Working Hours Schedules</h1>
+
+<button class="btn btn-primary btn-sm" @onclick="ShowAddModal">Add</button>
+@if (!schedules.Any())
+{
+    <p>No schedules available.</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var schedule in schedules)
+            {
+                <tr>
+                    <td>@schedule.Name</td>
+                    <td>
+                        <button class="btn btn-info btn-sm" @onclick="() => ShowUpdateModal(schedule)">Edit</button>
+                        <button class="btn btn-danger btn-sm" @onclick="() => ShowDeleteModal(schedule)">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<AddSchedule IsVisible="@isAddVisible"
+             OnClose="CloseAddModal"
+             OnAdd="HandleAdd" />
+
+<EditSchedule IsVisible="@isEditVisible"
+              ScheduleToEdit="selectedSchedule"
+              OnClose="CloseEditModal"
+              OnUpdate="HandleUpdate" />
+
+<DeleteSchedule IsVisible="@isDeleteVisible"
+                Schedule="selectedSchedule"
+                OnClose="CloseDeleteModal"
+                OnDelete="HandleDelete" />
+
+<ToastMessageModal IsVisible="@isToastVisible"
+                   Message="@toastMessage"
+                   ToastType="ToastType.Warning" />
+
+@code {
+    private List<Schedule> schedules = new();
+    private Schedule? selectedSchedule = new();
+
+    private bool isAddVisible = false;
+    private bool isEditVisible = false;
+    private bool isDeleteVisible = false;
+    private bool isToastVisible;
+    private string toastMessage = "";
+
+    [Inject] public IScheduleService _scheduleService { get; set; } = default!;
+    [Inject] public IToastService _toastService { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadSchedulesAsync();
+    }
+
+    private async Task LoadSchedulesAsync()
+    {
+        schedules = await _scheduleService.GetAllSchedulesAsync();
+    }
+
+    private void ShowAddModal() => isAddVisible = true;
+    private void CloseAddModal() => isAddVisible = false;
+
+    private async Task HandleAdd(Schedule schedule)
+    {
+        await _scheduleService.CreateScheduleAsync(schedule);
+        await LoadSchedulesAsync();
+    }
+
+    private void ShowUpdateModal(Schedule schedule)
+    {
+        selectedSchedule = schedule;
+        isEditVisible = true;
+    }
+    private void CloseEditModal() => isEditVisible = false;
+
+    private async Task HandleUpdate(Schedule schedule)
+    {
+        await _scheduleService.UpdateScheduleAsync(schedule);
+        await LoadSchedulesAsync();
+    }
+
+    private void ShowDeleteModal(Schedule schedule)
+    {
+        selectedSchedule = schedule;
+        isDeleteVisible = true;
+    }
+    private void CloseDeleteModal() => isDeleteVisible = false;
+
+    private async Task HandleDelete(Schedule schedule)
+    {
+        await _scheduleService.DeleteScheduleAsync(schedule.Id);
+        await LoadSchedulesAsync();
+    }
+}

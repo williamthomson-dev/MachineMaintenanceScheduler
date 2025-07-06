@@ -11,6 +11,9 @@ using MachineMaintenanceScheduler.Features.Technicians.Interfaces;
 using MachineMaintenanceScheduler.Features.Technicians.Repositories;
 using MachineMaintenanceScheduler.Features.Technicians.Services;
 using MachineMaintenanceScheduler.Features.Technicians.Validators;
+using MachineMaintenanceScheduler.Features.WorkingHours.Interfaces;
+using MachineMaintenanceScheduler.Features.WorkingHours.Repositories;
+using MachineMaintenanceScheduler.Features.WorkingHours.Services;
 using MachineMaintenanceScheduler.Shared.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -31,6 +34,8 @@ builder.Services.AddScoped<IMachineService, MachineService>();
 builder.Services.AddScoped<IMachineValidator, MachineValidator>();
 builder.Services.AddSingleton<IMachineRepository, InMemoryMachineRepository>();
 
+builder.Services.AddScoped<IScheduleRepository, InMemoryScheduleRepository>();
+builder.Services.AddScoped<IScheduleService, ScheduleService>();
 
 builder.Services.AddScoped<IToastService, ToastService>();
 
