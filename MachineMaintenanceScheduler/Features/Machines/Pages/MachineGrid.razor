@@ -6,9 +6,9 @@
 @using MachineMaintenanceScheduler.Features.Machines.Components
 @rendermode InteractiveServer
 
-<h3 class="mb-4">All Machines</h3>
+<h1>All Machines</h1>
 
-<button class="btn btn-primary mb-3" @onclick="ShowAddModal">Add Machine</button>
+<button class="btn btn-primary btn-sm" @onclick="ShowAddModal">Add Machine</button>
 
 @if (machines is null || !machines.Any())
 {
