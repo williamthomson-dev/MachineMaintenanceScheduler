@@ -21,6 +21,7 @@ namespace MachineMaintenanceScheduler.Features.WorkingHours.Services
         {    
             return _repository.GetByIdAsync(id);
         }
+
         public Task CreateScheduleAsync(Schedule schedule)
         { 
             return _repository.AddAsync(schedule); 

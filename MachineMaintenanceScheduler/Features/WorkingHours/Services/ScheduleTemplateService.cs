@@ -24,6 +24,7 @@ namespace MachineMaintenanceScheduler.Features.WorkingHours.Services
                         .Select(d => new ScheduleBlock
                         {
                             Id = Guid.NewGuid(),
+                            DayOfWeek = (DayOfWeek)d,
                             StartTime = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + d).AddHours(9),
                             EndTime = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + d).AddHours(17),
                         }).ToList()
@@ -37,12 +38,14 @@ namespace MachineMaintenanceScheduler.Features.WorkingHours.Services
                         new()
                         {
                             Id = Guid.NewGuid(),
+                            DayOfWeek = DayOfWeek.Saturday,
                             StartTime = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + 6).AddHours(9),
                             EndTime = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + 6).AddHours(17),
                         },
                         new()
                         {
                             Id = Guid.NewGuid(),
+                            DayOfWeek = DayOfWeek.Sunday,
                             StartTime = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + 7).AddHours(9),
                             EndTime = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + 7).AddHours(17),
                         }

@@ -1,0 +1,45 @@
+﻿@using MachineMaintenanceScheduler.Features.WorkingHours.Models
+@using MachineMaintenanceScheduler.Shared.Layout
+@inherits LayoutComponentBase
+
+<Modal Title="Schedule Details" IsVisible="@IsVisible" OnClose="OnClose">
+    <ChildContent>
+        @if (Schedule is not null)
+        {
+            <label><strong>Name:</strong> @Schedule.Name</label>
+
+            @if (Schedule.ScheduleBlocks is not null && Schedule.ScheduleBlocks.Any())
+            {
+                <table class="table table-bordered mt-3">
+                    <thead>
+                        <tr>
+                            <th>Week Day</th>
+                            <th>Start Time</th>
+                            <th>End Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var block in Schedule.ScheduleBlocks)
+                        {
+                            <tr>
+                                <td>@block.DayOfWeek.ToString()</td>
+                                <td>@block.StartTime.ToString("HH:mm")</td>
+                                <td>@block.EndTime.ToString("HH:mm")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p>No shift records available.</p>
+            }
+        }
+    </ChildContent>
+</Modal>
+
+@code {
+    [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public Schedule? Schedule { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+}

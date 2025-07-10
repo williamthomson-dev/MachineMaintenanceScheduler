@@ -29,7 +29,6 @@
     [Inject] IScheduleTemplateService TemplateService { get; set; } = default!;
 
     private Schedule Schedule { get; set; } = new();
-    private string? validationError;
 
     private List<Schedule> Templates { get; set; } = new();
     private string? SelectedTemplateName;
@@ -49,8 +48,6 @@
 
     private void ResetForm()
     {
-        validationError = null;
-
         if (Templates.Count > 0)
         {
             var defaultTemplate = Templates.First();
@@ -64,6 +61,7 @@
                 ScheduleBlocks = defaultTemplate.ScheduleBlocks.Select(sb => new ScheduleBlock
                 {
                     Id = Guid.NewGuid(),
+                    DayOfWeek = sb.DayOfWeek,
                     StartTime = sb.StartTime,
                     EndTime = sb.EndTime,
                     ScheduleId = newId
@@ -95,6 +93,7 @@
                 ScheduleBlocks = template.ScheduleBlocks.Select(sb => new ScheduleBlock
                 {
                     Id = Guid.NewGuid(),
+                    DayOfWeek = sb.DayOfWeek,
                     StartTime = sb.StartTime,
                     EndTime = sb.EndTime,
                     ScheduleId = newId

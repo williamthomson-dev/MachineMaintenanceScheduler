@@ -32,7 +32,7 @@ namespace MachineMaintenanceScheduler.Features.WorkingHours.Repositories
                 existing.Name = schedule.Name;
                 existing.ScheduleBlocks = schedule.ScheduleBlocks;
             }
-            return Task.CompletedTask;
+            return Task.CompletedTask; 
         }
 
         public Task DeleteAsync(Guid id)
