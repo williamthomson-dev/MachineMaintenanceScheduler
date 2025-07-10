@@ -36,6 +36,7 @@ builder.Services.AddSingleton<IMachineRepository, InMemoryMachineRepository>();
 
 builder.Services.AddScoped<IScheduleRepository, InMemoryScheduleRepository>();
 builder.Services.AddScoped<IScheduleService, ScheduleService>();
+builder.Services.AddScoped<IScheduleTemplateService, ScheduleTemplateService>();
 
 builder.Services.AddScoped<IToastService, ToastService>();
 
