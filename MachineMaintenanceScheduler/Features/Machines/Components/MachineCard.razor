@@ -1,0 +1,20 @@
+﻿@using MachineMaintenanceScheduler.Features.Machines.Models
+
+<div class="machine-card border rounded p-3 shadow-sm bg-light h-100 d-flex flex-column justify-content-between">
+    <div>
+        <h5 class="text-primary">@Machine.Name</h5>
+        <p><strong>Serial Number:</strong> @Machine.SerialNumber</p>
+        <p><strong>Last Maintenance:</strong> @Machine.LastMaintenanceDate.ToShortDateString()</p>
+    </div>
+
+    <div class="mt-3 d-flex justify-content-between">
+        <button class="btn btn-sm btn-outline-primary" @onclick="() => OnEdit.InvokeAsync(Machine)">Edit</button>
+        <button class="btn btn-sm btn-outline-danger" @onclick="() => OnDelete.InvokeAsync(Machine)">Delete</button>
+    </div>
+</div>
+
+@code {
+    [Parameter] public Machine Machine { get; set; } = default!;
+    [Parameter] public EventCallback<Machine> OnEdit { get; set; }
+    [Parameter] public EventCallback<Machine> OnDelete { get; set; }
+}

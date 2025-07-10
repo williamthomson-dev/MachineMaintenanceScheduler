@@ -1,0 +1,155 @@
+﻿@page "/machines"
+@using MachineMaintenanceScheduler.Features.Machines.Interfaces
+@using MachineMaintenanceScheduler.Features.Machines.Models
+@using MachineMaintenanceScheduler.Features.Machines.Services
+@using MachineMaintenanceScheduler.Shared.Services
+@using MachineMaintenanceScheduler.Features.Machines.Components
+@rendermode InteractiveServer
+
+<h3 class="mb-4">All Machines</h3>
+
+<button class="btn btn-primary mb-3" @onclick="ShowAddModal">Add Machine</button>
+
+@if (machines is null || !machines.Any())
+{
+    <p>No machines available.</p>
+}
+else
+{
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+        @foreach (var machine in machines)
+        {
+            <div class="col d-flex">
+                <MachineCard Machine="machine"
+                             OnEdit="ShowUpdateModal"
+                             OnDelete="ShowDeleteModal" />
+            </div>
+        }
+    </div>
+}
+
+<AddMachine IsVisible="@isAddMachineVisible"
+                 OnClose="CloseAddModal"
+                 OnAdd="HandleMachineAdd" />
+
+<EditMachine IsVisible="@isUpdateMachineVisible"
+                    MachineToEdit="selectedMachine"
+                    OnClose="CloseUpdateModal"
+                    OnUpdate="HandleMachineUpdated" />
+
+<DeleteMachine IsVisible="@isDeleteMachineVisible"
+                    Machine="selectedMachine"
+                    OnClose="CloseDeleteModal"
+                    OnDelete="HandleMachineDeleted" />
+
+@code {
+    #region Variables
+    private List<Machine> machines = new();
+    private bool isAddMachineVisible = false;
+    private bool isUpdateMachineVisible = false;
+    private bool isDeleteMachineVisible = false;
+    private Machine? selectedMachine = null;
+    #endregion
+
+    #region Injected Services
+    [Inject] public IMachineService _machineService { get; set; } = default!;
+    [Inject] public IMachineValidator _machineValidator { get; set; } = default!;
+    [Inject] public IToastService _toastService { get; set; } = default!;
+    #endregion
+
+    #region Lifecycle Methods
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadMachinesAsync();
+    }
+    #endregion
+
+    #region Data Loading
+    private async Task LoadMachinesAsync()
+    {
+        machines = await _machineService.GetAllMachinesAsync();
+    }
+    #endregion
+
+    #region Add Machine Modal
+    private async Task ShowAddModal()
+    {
+        isAddMachineVisible = true;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task CloseAddModal()
+    {
+        isAddMachineVisible = false;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task HandleMachineAdd(Machine machine)
+    {
+        var result = _machineValidator.ValidateMachine(machine);
+        if (!result.IsValid)
+        {
+            _toastService.ShowToastMessage(result.GetFormattedErrors());
+            return;
+        }
+
+        await _machineService.CreateMachineAsync(machine);
+        await LoadMachinesAsync();
+        isAddMachineVisible = false;
+        await InvokeAsync(StateHasChanged);
+    }
+    #endregion
+
+    #region Update Machine Modal
+    private async Task ShowUpdateModal(Machine machine)
+    {
+        selectedMachine = machine;
+        isUpdateMachineVisible = true;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task CloseUpdateModal()
+    {
+        isUpdateMachineVisible = false;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task HandleMachineUpdated(Machine machine)
+    {
+        var result = _machineValidator.ValidateMachine(machine);
+        if (!result.IsValid)
+        {
+            _toastService.ShowToastMessage(result.GetFormattedErrors());
+            return;
+        }
+
+        await _machineService.UpdateMachineAsync(machine);
+        await LoadMachinesAsync();
+        isUpdateMachineVisible = false;
+        await InvokeAsync(StateHasChanged);
+    }
+    #endregion
+
+    #region Delete Machine Modal
+    private async Task ShowDeleteModal(Machine machine)
+    {
+        selectedMachine = machine;
+        isDeleteMachineVisible = true;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task CloseDeleteModal()
+    {
+        isDeleteMachineVisible = false;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task HandleMachineDeleted(Machine machine)
+    {
+        await _machineService.DeleteMachineAsync(machine.Id);
+        await LoadMachinesAsync();
+        isDeleteMachineVisible = false;
+        await InvokeAsync(StateHasChanged);
+    }
+    #endregion
+}

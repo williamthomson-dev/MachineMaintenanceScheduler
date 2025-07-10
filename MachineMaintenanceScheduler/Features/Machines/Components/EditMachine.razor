@@ -13,6 +13,9 @@
 
         <label>Name:</label>
         <input class="form-control" @bind="EditableMachine.Name" />
+
+        <label>Serial No.:</label>
+        <input class="form-control" @bind="EditableMachine.SerialNumber" />
     </ChildContent>
 
     <FooterContent>
@@ -44,7 +47,10 @@
             EditableMachine = new Machine 
             {
                 Id = MachineToEdit.Id,
-                Name = MachineToEdit.Name
+                Name = MachineToEdit.Name,
+                SerialNumber = MachineToEdit.SerialNumber,
+                LastMaintenanceDate = MachineToEdit.LastMaintenanceDate,
+                SkillRequired = MachineToEdit.SkillRequired 
             };
         }
     }
