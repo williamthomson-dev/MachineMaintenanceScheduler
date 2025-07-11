@@ -1,0 +1,48 @@
+﻿@using MachineMaintenanceScheduler.Features.MaintenanceRules.Models
+@using MachineMaintenanceScheduler.Shared.Layout
+@inherits LayoutComponentBase
+
+<Modal Title="Add Maintenance Rule" IsVisible="@IsVisible" OnClose="OnClose">
+    <ChildContent>
+        <label>Rule Name:</label>
+        <input class="form-control" @bind="Rule.Name" />
+
+        <label class="mt-2">Interval:</label>
+        <input class="form-control" type="number" @bind="Rule.IntervalValue" />
+
+        <label class="mt-2">Type:</label>
+        <InputSelect class="form-control" @bind-Value="Rule.IntervalType">
+            @foreach (var type in Enum.GetValues<MaintenanceIntervalType>())
+            {
+                <option value="@type">@type</option>
+            }
+        </InputSelect>
+    </ChildContent>
+
+    <FooterContent>
+        <button class="btn btn-primary" @onclick="ConfirmAdd">Save</button>
+        <button class="btn btn-secondary" @onclick="OnClose">Cancel</button>
+    </FooterContent>
+</Modal>
+
+@code {
+    [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+    [Parameter] public EventCallback<MachineMaintenanceRule> OnAdd { get; set; }
+
+    private MachineMaintenanceRule Rule = new();
+
+    private void ResetForm() => Rule = new();
+
+    protected override void OnParametersSet()
+    {
+        if (IsVisible)
+            ResetForm();
+    }
+
+    private async Task ConfirmAdd()
+    {
+        await OnAdd.InvokeAsync(Rule);
+        await OnClose.InvokeAsync();
+    }
+}

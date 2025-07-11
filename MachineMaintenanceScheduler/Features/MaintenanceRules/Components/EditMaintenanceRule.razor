@@ -1,0 +1,54 @@
+﻿@using MachineMaintenanceScheduler.Features.MaintenanceRules.Models
+@using MachineMaintenanceScheduler.Shared.Layout
+
+<Modal Title="Edit Maintenance Rule" IsVisible="@IsVisible" OnClose="OnClose">
+    <ChildContent>
+        <label>Rule Name:</label>
+        <input class="form-control" @bind="EditableRule.Name" />
+
+        <label class="mt-2">Interval:</label>
+        <input class="form-control" type="number" @bind="EditableRule.IntervalValue" />
+
+        <label class="mt-2">Type:</label>
+        <InputSelect class="form-control" @bind-Value="EditableRule.IntervalType">
+            @foreach (var type in Enum.GetValues<MaintenanceIntervalType>())
+            {
+                <option value="@type">@type</option>
+            }
+        </InputSelect>
+    </ChildContent>
+
+    <FooterContent>
+        <button class="btn btn-primary" @onclick="ConfirmEdit">Save</button>
+        <button class="btn btn-secondary" @onclick="OnClose">Cancel</button>
+    </FooterContent>
+</Modal>
+
+@code {
+    [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public MachineMaintenanceRule Rule { get; set; } = default!;
+    [Parameter] public EventCallback OnClose { get; set; }
+    [Parameter] public EventCallback<MachineMaintenanceRule> OnUpdate { get; set; }
+
+    private MachineMaintenanceRule EditableRule = new();
+
+    protected override void OnParametersSet()
+    {
+        if (Rule != null)
+        {
+            EditableRule = new()
+            {
+                Id = Rule.Id,
+                Name = Rule.Name,
+                IntervalValue = Rule.IntervalValue,
+                IntervalType = Rule.IntervalType
+            };
+        }
+    }
+
+    private async Task ConfirmEdit()
+    {
+        await OnUpdate.InvokeAsync(EditableRule);
+        await OnClose.InvokeAsync();
+    }
+}

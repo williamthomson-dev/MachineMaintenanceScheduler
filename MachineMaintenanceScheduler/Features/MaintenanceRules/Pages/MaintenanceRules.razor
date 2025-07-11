@@ -1,0 +1,87 @@
+﻿@page "/maintenanceRules"
+@using MachineMaintenanceScheduler.Features.MaintenanceRules.Components
+@using MachineMaintenanceScheduler.Features.MaintenanceRules.Models
+@rendermode InteractiveServer
+
+<h3 class="mb-4">Machine Maintenance Rules</h3>
+
+<button class="btn btn-primary mb-3" @onclick="ShowAddModal">Add Rule</button>
+
+@if (!rules.Any())
+{
+    <p>No maintenance rules defined.</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Rule</th>
+                <th>Interval</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var rule in rules)
+            {
+                <tr>
+                    <td>@rule.Name</td>
+                    <td>@rule.IntervalValue @rule.IntervalType</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary" @onclick="() => ShowEditModal(rule)">Edit</button>
+                        <button class="btn btn-sm btn-outline-danger" @onclick="() => ShowDeleteModal(rule)">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<AddMaintenanceRule IsVisible="@isAddVisible" OnClose="CloseAddModal" OnAdd="HandleAdd" />
+<EditMaintenanceRule IsVisible="@isEditVisible" Rule="@selectedRule" OnClose="CloseEditModal" OnUpdate="HandleEdit" />
+<DeleteMaintenanceRule IsVisible="@isDeleteVisible" Rule="@selectedRule" OnClose="CloseDeleteModal" OnDelete="HandleDelete" />
+
+@code {
+    private List<MachineMaintenanceRule> rules = new();
+    private MachineMaintenanceRule? selectedRule;
+
+    private bool isAddVisible = false;
+    private bool isEditVisible = false;
+    private bool isDeleteVisible = false;
+
+    private void ShowAddModal() => isAddVisible = true;
+    private void CloseAddModal() => isAddVisible = false;
+
+    private void ShowEditModal(MachineMaintenanceRule rule)
+    {
+        selectedRule = rule;
+        isEditVisible = true;
+    }
+    private void CloseEditModal() => isEditVisible = false;
+
+    private void ShowDeleteModal(MachineMaintenanceRule rule)
+    {
+        selectedRule = rule;
+        isDeleteVisible = true;
+    }
+    private void CloseDeleteModal() => isDeleteVisible = false;
+
+    private Task HandleAdd(MachineMaintenanceRule rule)
+    {
+        rules.Add(rule);
+        return Task.CompletedTask;
+    }
+
+    private Task HandleEdit(MachineMaintenanceRule rule)
+    {
+        var index = rules.FindIndex(r => r.Id == rule.Id);
+        if (index >= 0) rules[index] = rule;
+        return Task.CompletedTask;
+    }
+
+    private Task HandleDelete(MachineMaintenanceRule rule)
+    {
+        rules.RemoveAll(r => r.Id == rule.Id);
+        return Task.CompletedTask;
+    }
+}

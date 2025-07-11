@@ -1,0 +1,31 @@
+﻿@using MachineMaintenanceScheduler.Features.MaintenanceRules.Models
+@using MachineMaintenanceScheduler.Shared.Layout
+
+<Modal Title="Delete Maintenance Rule"
+       IsVisible="@IsVisible"
+       OnClose="OnClose">
+    <ChildContent>
+        <p>Are you sure you want to delete the rule for <strong>@Rule?.Name</strong>?</p>
+    </ChildContent>
+
+    <FooterContent>
+        <button class="btn btn-danger" @onclick="ConfirmDelete">Delete</button>
+        <button class="btn btn-secondary" @onclick="OnClose">Cancel</button>
+    </FooterContent>
+</Modal>
+
+@code {
+    [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public MachineMaintenanceRule? Rule { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+    [Parameter] public EventCallback<MachineMaintenanceRule> OnDelete { get; set; }
+
+    private async Task ConfirmDelete()
+    {
+        if (Rule is not null)
+        {
+            await OnDelete.InvokeAsync(Rule);
+            await OnClose.InvokeAsync();
+        }
+    }
+}
