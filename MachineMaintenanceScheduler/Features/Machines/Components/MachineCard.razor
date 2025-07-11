@@ -3,8 +3,11 @@
 <div class="machine-card border rounded p-3 shadow-sm bg-light h-100 d-flex flex-column justify-content-between">
     <div>
         <h5 class="text-primary">@Machine.Name</h5>
-        <p><strong>Serial Number:</strong> @Machine.SerialNumber</p>
-        <p><strong>Last Maintenance:</strong> @Machine.LastMaintenanceDate.ToShortDateString()</p>
+        <p>
+            <strong>Serial Number:</strong> @Machine.SerialNumber <br />
+            <strong>Last Maintenance:</strong> @Machine.LastMaintenanceDate.ToShortDateString() <br />
+            <strong>Maintenance Rule:</strong> @Machine.MachineMaintenanceRule?.Name
+        </p>
     </div>
 
     <div class="mt-3 d-flex justify-content-between">

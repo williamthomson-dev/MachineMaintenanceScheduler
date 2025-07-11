@@ -41,7 +41,7 @@ builder.Services.AddScoped<IScheduleService, ScheduleService>();
 builder.Services.AddScoped<IScheduleTemplateService, ScheduleTemplateService>();
 builder.Services.AddSingleton<IScheduleRepository, InMemoryScheduleRepository>();
 
-builder.Services.AddScoped<IMaintenanceRuleRepository, MaintenanceRuleRepository>();
+builder.Services.AddScoped<IMaintenanceRuleRepository, InMemoryMaintenanceRuleRepository>();
 builder.Services.AddScoped<IMaintenanceRuleService, MaintenanceRuleService>();
 
 builder.Services.AddScoped<IToastService, ToastService>();

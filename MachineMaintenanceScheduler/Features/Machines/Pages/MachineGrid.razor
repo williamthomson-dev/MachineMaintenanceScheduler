@@ -2,11 +2,16 @@
 @using MachineMaintenanceScheduler.Features.Machines.Interfaces
 @using MachineMaintenanceScheduler.Features.Machines.Models
 @using MachineMaintenanceScheduler.Features.Machines.Services
-@using MachineMaintenanceScheduler.Shared.Services
 @using MachineMaintenanceScheduler.Features.Machines.Components
+@using MachineMaintenanceScheduler.Features.MaintenanceRules.Interfaces
+@using MachineMaintenanceScheduler.Features.MaintenanceRules.Models
+@using MachineMaintenanceScheduler.Shared.Components
+@using MachineMaintenanceScheduler.Shared.Modals
+@using MachineMaintenanceScheduler.Shared.Services
+@attribute [StreamRendering]
 @rendermode InteractiveServer
 
-<h1>All Machines</h1>
+<h3 class="mb-4">All Machines</h3>
 
 <button class="btn btn-primary btn-sm" @onclick="ShowAddModal">Add Machine</button>
 
@@ -28,30 +33,36 @@ else
     </div>
 }
 
-<AddMachine IsVisible="@isAddMachineVisible"
-                 OnClose="CloseAddModal"
-                 OnAdd="HandleMachineAdd" />
+<AddMachine IsVisible="@isAddMachineVisible" AllMachineMaintenanceRules="maintenanceRules"
+            OnClose="CloseAddModal" OnAdd="HandleMachineAdd" />
 
-<EditMachine IsVisible="@isUpdateMachineVisible"
-                    MachineToEdit="selectedMachine"
-                    OnClose="CloseUpdateModal"
-                    OnUpdate="HandleMachineUpdated" />
+<EditMachine IsVisible="@isUpdateMachineVisible" AllMachineMaintenanceRules="maintenanceRules"
+             MachineToEdit="selectedMachine"
+             OnClose="CloseUpdateModal" OnUpdate="HandleMachineUpdated" />
 
 <DeleteMachine IsVisible="@isDeleteMachineVisible"
                     Machine="selectedMachine"
                     OnClose="CloseDeleteModal"
                     OnDelete="HandleMachineDeleted" />
 
+<ToastMessageModal IsVisible="@isToastVisible"
+            Message="@toastMessage"
+            ToastType="ToastType.Warning" />
 @code {
     #region Variables
     private List<Machine> machines = new();
+    private List<MachineMaintenanceRule> maintenanceRules = new();
     private bool isAddMachineVisible = false;
     private bool isUpdateMachineVisible = false;
     private bool isDeleteMachineVisible = false;
     private Machine? selectedMachine = null;
+
+    private bool isToastVisible;
+    private string toastMessage = "";
     #endregion
 
     #region Injected Services
+    [Inject] public IMaintenanceRuleService _maintenanceRuleService { get; set; } = default!;
     [Inject] public IMachineService _machineService { get; set; } = default!;
     [Inject] public IMachineValidator _machineValidator { get; set; } = default!;
     [Inject] public IToastService _toastService { get; set; } = default!;
@@ -67,24 +78,27 @@ else
     #region Data Loading
     private async Task LoadMachinesAsync()
     {
-        machines = await _machineService.GetAllMachinesAsync();
+        machines = await _machineService.GetMachinesWithMaintenanceRulesAsync();
+        maintenanceRules = await _maintenanceRuleService.GetAllRulesAsync();
     }
     #endregion
 
     #region Add Machine Modal
-    private async Task ShowAddModal()
+    private void ShowAddModal()
     {
-        isAddMachineVisible = true;
-        await InvokeAsync(StateHasChanged);
+        if (!maintenanceRules.Any())
+            _toastService.ShowToastMessage("Please add maintenance rules before adding Machine.", ToastType.Warning);
+        else
+            isAddMachineVisible = true;
+
     }
 
-    private async Task CloseAddModal()
+    private void CloseAddModal()
     {
         isAddMachineVisible = false;
-        await InvokeAsync(StateHasChanged);
     }
 
-    private async Task HandleMachineAdd(Machine machine)
+    private async void HandleMachineAdd(Machine machine)
     {
         var result = _machineValidator.ValidateMachine(machine);
         if (!result.IsValid)
@@ -96,25 +110,29 @@ else
         await _machineService.CreateMachineAsync(machine);
         await LoadMachinesAsync();
         isAddMachineVisible = false;
-        await InvokeAsync(StateHasChanged);
     }
     #endregion
 
     #region Update Machine Modal
-    private async Task ShowUpdateModal(Machine machine)
+    private void ShowUpdateModal(Machine machine)
     {
-        selectedMachine = machine;
-        isUpdateMachineVisible = true;
-        await InvokeAsync(StateHasChanged);
+        if (!maintenanceRules.Any())
+        {
+            _toastService.ShowToastMessage("Please add maintenance rules before updating machine.", ToastType.Warning);
+        }
+        else
+        {
+            selectedMachine = machine;
+            isUpdateMachineVisible = true;
+        }
     }
 
-    private async Task CloseUpdateModal()
+    private void CloseUpdateModal()
     {
         isUpdateMachineVisible = false;
-        await InvokeAsync(StateHasChanged);
     }
 
-    private async Task HandleMachineUpdated(Machine machine)
+    private async void HandleMachineUpdated(Machine machine)
     {
         var result = _machineValidator.ValidateMachine(machine);
         if (!result.IsValid)
@@ -126,30 +144,27 @@ else
         await _machineService.UpdateMachineAsync(machine);
         await LoadMachinesAsync();
         isUpdateMachineVisible = false;
-        await InvokeAsync(StateHasChanged);
+
     }
     #endregion
 
     #region Delete Machine Modal
-    private async Task ShowDeleteModal(Machine machine)
+    private void ShowDeleteModal(Machine machine)
     {
         selectedMachine = machine;
         isDeleteMachineVisible = true;
-        await InvokeAsync(StateHasChanged);
     }
 
-    private async Task CloseDeleteModal()
+    private void CloseDeleteModal()
     {
         isDeleteMachineVisible = false;
-        await InvokeAsync(StateHasChanged);
     }
 
-    private async Task HandleMachineDeleted(Machine machine)
+    private async void HandleMachineDeleted(Machine machine)
     {
         await _machineService.DeleteMachineAsync(machine.Id);
         await LoadMachinesAsync();
         isDeleteMachineVisible = false;
-        await InvokeAsync(StateHasChanged);
     }
     #endregion
 }

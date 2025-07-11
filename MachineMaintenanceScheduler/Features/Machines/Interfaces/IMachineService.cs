@@ -4,6 +4,7 @@ namespace MachineMaintenanceScheduler.Features.Machines.Interfaces
 {
     public interface IMachineService
     {
+        Task<List<Machine>> GetMachinesWithMaintenanceRulesAsync();
         Task<List<Machine>> GetAllMachinesAsync();
         Task<Machine?> GetMachineByIdAsync(Guid id);
         Task CreateMachineAsync(Machine machine);

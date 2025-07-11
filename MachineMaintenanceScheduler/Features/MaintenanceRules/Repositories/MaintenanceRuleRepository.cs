@@ -4,7 +4,7 @@ using MachineMaintenanceScheduler.Features.Skills.Models;
 
 namespace MachineMaintenanceScheduler.Features.MaintenanceRules.Repositories
 {
-    public class MaintenanceRuleRepository : IMaintenanceRuleRepository
+    public class InMemoryMaintenanceRuleRepository : IMaintenanceRuleRepository
     {
         private readonly List<MachineMaintenanceRule> _machineMaintenanceRules = new();
 

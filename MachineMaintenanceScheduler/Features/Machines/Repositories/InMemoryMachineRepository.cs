@@ -59,6 +59,7 @@ namespace MachineMaintenanceScheduler.Features.Machines.Repositories
             existing.SerialNumber = machine.SerialNumber;
             existing.LastMaintenanceDate = machine.LastMaintenanceDate;
             existing.SkillRequired = machine.SkillRequired;
+            existing.MachineMaintenanceRuleId = machine.MachineMaintenanceRuleId;
             return Task.CompletedTask;
         }
 

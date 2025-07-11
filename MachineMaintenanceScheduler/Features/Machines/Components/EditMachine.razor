@@ -1,5 +1,6 @@
 ﻿@using MachineMaintenanceScheduler.Features.Machines.Interfaces
 @using MachineMaintenanceScheduler.Features.Machines.Models
+@using MachineMaintenanceScheduler.Features.MaintenanceRules.Models
 @using MachineMaintenanceScheduler.Shared.Layout
 
 <Modal Title="Update Machine"
@@ -16,6 +17,18 @@
 
         <label>Serial No.:</label>
         <input class="form-control" @bind="EditableMachine.SerialNumber" />
+
+        @if (AllMachineMaintenanceRules.Any())
+        {
+            <label>Machine Maintenance Rule:</label>
+            <select class="form-select" @bind="EditableMachine.MachineMaintenanceRuleId">
+                @foreach (var machineMaintenanceRule in AllMachineMaintenanceRules)
+                {
+                    <option value="@machineMaintenanceRule.Id">@machineMaintenanceRule.Name</option>
+                }
+            </select>
+        }
+
     </ChildContent>
 
     <FooterContent>
@@ -28,6 +41,7 @@
 
 @code {
     [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public List<MachineMaintenanceRule> AllMachineMaintenanceRules { get; set; } = new();
     [Parameter] public Machine MachineToEdit { get; set; } = new();
     [Parameter] public EventCallback OnClose { get; set; }
     [Parameter] public EventCallback<Machine> OnUpdate { get; set; }
@@ -50,7 +64,8 @@
                 Name = MachineToEdit.Name,
                 SerialNumber = MachineToEdit.SerialNumber,
                 LastMaintenanceDate = MachineToEdit.LastMaintenanceDate,
-                SkillRequired = MachineToEdit.SkillRequired 
+                SkillRequired = MachineToEdit.SkillRequired,
+                MachineMaintenanceRuleId = MachineToEdit.MachineMaintenanceRuleId,
             };
         }
     }

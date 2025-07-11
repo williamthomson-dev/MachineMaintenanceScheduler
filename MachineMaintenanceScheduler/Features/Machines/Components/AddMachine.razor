@@ -1,5 +1,6 @@
 ﻿@using MachineMaintenanceScheduler.Features.Machines.Interfaces
 @using MachineMaintenanceScheduler.Features.Machines.Models
+@using MachineMaintenanceScheduler.Features.MaintenanceRules.Models
 @using MachineMaintenanceScheduler.Shared.Layout
 
 <Modal Title="Add Machine"
@@ -17,6 +18,16 @@
         <label>Serial No.:</label>
         <input class="form-control" @bind="Machine.SerialNumber" />
 
+        @if (AllMachineMaintenanceRules.Any())
+        {
+            <label>Machine Maintenance Rule:</label>
+            <select class="form-select" @bind="Machine.MachineMaintenanceRuleId">
+                @foreach (var machineMaintenanceRule in AllMachineMaintenanceRules)
+                {
+                    <option value="@machineMaintenanceRule.Id">@machineMaintenanceRule.Name</option>
+                }
+            </select>
+        }
     </ChildContent>
 
     <FooterContent>
@@ -27,6 +38,7 @@
 
 @code {
     [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public List<MachineMaintenanceRule> AllMachineMaintenanceRules { get; set; } = new();
     [Parameter] public EventCallback OnClose { get; set; }
     [Parameter] public EventCallback<Machine> OnAdd { get; set; }
 

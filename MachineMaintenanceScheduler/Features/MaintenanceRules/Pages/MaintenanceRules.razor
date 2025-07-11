@@ -7,13 +7,9 @@
 
 <h3 class="mb-4">Machine Maintenance Rules</h3>
 
-<button class="btn btn-primary mb-3" @onclick="ShowAddModal">Add Rule</button>
+<button class="btn btn-primary btn-sm" @onclick="ShowAddModal">Add Rule</button>
 
-@if (rules is null)
-{
-    <p>Loading rules...</p>
-}
-else if (!rules.Any())
+@if (rules is null || !rules.Any())
 {
     <p>No maintenance rules defined.</p>
 }
