@@ -1,13 +1,19 @@
 ﻿@page "/maintenanceRules"
 @using MachineMaintenanceScheduler.Features.MaintenanceRules.Components
 @using MachineMaintenanceScheduler.Features.MaintenanceRules.Models
+@using MachineMaintenanceScheduler.Features.MaintenanceRules.Interfaces
+@using MachineMaintenanceScheduler.Shared.Services
 @rendermode InteractiveServer
 
 <h3 class="mb-4">Machine Maintenance Rules</h3>
 
 <button class="btn btn-primary mb-3" @onclick="ShowAddModal">Add Rule</button>
 
-@if (!rules.Any())
+@if (rules is null)
+{
+    <p>Loading rules...</p>
+}
+else if (!rules.Any())
 {
     <p>No maintenance rules defined.</p>
 }
@@ -42,12 +48,24 @@ else
 <DeleteMaintenanceRule IsVisible="@isDeleteVisible" Rule="@selectedRule" OnClose="CloseDeleteModal" OnDelete="HandleDelete" />
 
 @code {
-    private List<MachineMaintenanceRule> rules = new();
+    private List<MachineMaintenanceRule>? rules;
     private MachineMaintenanceRule? selectedRule;
 
     private bool isAddVisible = false;
     private bool isEditVisible = false;
     private bool isDeleteVisible = false;
+
+    [Inject] IMaintenanceRuleService MaintenanceRuleService { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadRulesAsync();
+    }
+
+    private async Task LoadRulesAsync()
+    {
+        rules = await MaintenanceRuleService.GetAllRulesAsync();
+    }
 
     private void ShowAddModal() => isAddVisible = true;
     private void CloseAddModal() => isAddVisible = false;
@@ -57,6 +75,7 @@ else
         selectedRule = rule;
         isEditVisible = true;
     }
+
     private void CloseEditModal() => isEditVisible = false;
 
     private void ShowDeleteModal(MachineMaintenanceRule rule)
@@ -64,24 +83,27 @@ else
         selectedRule = rule;
         isDeleteVisible = true;
     }
+
     private void CloseDeleteModal() => isDeleteVisible = false;
 
-    private Task HandleAdd(MachineMaintenanceRule rule)
+    private async Task HandleAdd(MachineMaintenanceRule rule)
     {
-        rules.Add(rule);
-        return Task.CompletedTask;
+        await MaintenanceRuleService.CreateRuleAsync(rule);
+        await LoadRulesAsync();
+        isAddVisible = false;
     }
 
-    private Task HandleEdit(MachineMaintenanceRule rule)
+    private async Task HandleEdit(MachineMaintenanceRule rule)
     {
-        var index = rules.FindIndex(r => r.Id == rule.Id);
-        if (index >= 0) rules[index] = rule;
-        return Task.CompletedTask;
+        await MaintenanceRuleService.UpdateRuleAsync(rule);
+        await LoadRulesAsync();
+        isEditVisible = false;
     }
 
-    private Task HandleDelete(MachineMaintenanceRule rule)
+    private async Task HandleDelete(MachineMaintenanceRule rule)
     {
-        rules.RemoveAll(r => r.Id == rule.Id);
-        return Task.CompletedTask;
+        await MaintenanceRuleService.DeleteRuleAsync(rule.Id);
+        await LoadRulesAsync();
+        isDeleteVisible = false;
     }
 }

@@ -3,6 +3,9 @@ using MachineMaintenanceScheduler.Features.Machines.Interfaces;
 using MachineMaintenanceScheduler.Features.Machines.Repositories;
 using MachineMaintenanceScheduler.Features.Machines.Services;
 using MachineMaintenanceScheduler.Features.Machines.Validators;
+using MachineMaintenanceScheduler.Features.MaintenanceRules.Interfaces;
+using MachineMaintenanceScheduler.Features.MaintenanceRules.Repositories;
+using MachineMaintenanceScheduler.Features.MaintenanceRules.Services;
 using MachineMaintenanceScheduler.Features.Skills.Interfaces;
 using MachineMaintenanceScheduler.Features.Skills.Repositories;
 using MachineMaintenanceScheduler.Features.Skills.Services;
@@ -34,9 +37,12 @@ builder.Services.AddScoped<IMachineService, MachineService>();
 builder.Services.AddScoped<IMachineValidator, MachineValidator>();
 builder.Services.AddSingleton<IMachineRepository, InMemoryMachineRepository>();
 
-builder.Services.AddScoped<IScheduleRepository, InMemoryScheduleRepository>();
 builder.Services.AddScoped<IScheduleService, ScheduleService>();
 builder.Services.AddScoped<IScheduleTemplateService, ScheduleTemplateService>();
+builder.Services.AddSingleton<IScheduleRepository, InMemoryScheduleRepository>();
+
+builder.Services.AddScoped<IMaintenanceRuleRepository, MaintenanceRuleRepository>();
+builder.Services.AddScoped<IMaintenanceRuleService, MaintenanceRuleService>();
 
 builder.Services.AddScoped<IToastService, ToastService>();
 

@@ -2,9 +2,10 @@
 {
     public enum MaintenanceIntervalType
     {
-        Days = 0,
-        Weeks = 1,
-        Months = 2,
-        Years = 3 
+        Hours = 0,
+        Days = 1,
+        Weeks = 2,
+        Months = 3,
+        Years = 4 
     }
 }

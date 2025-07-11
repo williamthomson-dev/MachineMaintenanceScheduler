@@ -17,9 +17,9 @@ namespace MachineMaintenanceScheduler.Features.Skills.Services
             return await _skillRepository.GetAllSkillsAsync();
         }
 
-        public Task<Skill?> GetSkillByIdAsync(Guid Id)
+        public async Task<Skill?> GetSkillByIdAsync(Guid Id)
         {
-            return _skillRepository.GetSkillByIdAsync(Id);
+            return await _skillRepository.GetSkillByIdAsync(Id);
         }
 
         public async Task CreateSkillAsync(Skill skill)
@@ -27,14 +27,14 @@ namespace MachineMaintenanceScheduler.Features.Skills.Services
             await _skillRepository.AddSkillAsync(skill);
         }
 
-        public Task UpdateSkillAsync(Skill skill)
+        public async Task UpdateSkillAsync(Skill skill)
         {
-            return _skillRepository.UpdateSkillAsync(skill);
+            await _skillRepository.UpdateSkillAsync(skill);
         }
 
-        public Task DeleteSkillAsync(Guid id)
+        public async Task DeleteSkillAsync(Guid id)
         {
-            return _skillRepository.DeleteSkillAsync(id);
+            await _skillRepository.DeleteSkillAsync(id);
         }
     }
 }
