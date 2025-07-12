@@ -15,19 +15,21 @@ namespace MachineMaintenanceScheduler.Features.Machines.Repositories
             {
                 new Machine
                 {
-                    Id = Guid.NewGuid(),
+                    Id = Guid.Parse("5d2c35b0-7b4f-4a3e-a7ff-59f4e2c8e65b"),
                     Name = "Lathe Machine",
                     SerialNumber = "LM-123456",
                     LastMaintenanceDate = DateTime.Now.AddMonths(-3),
-                    SkillRequired = Guid.Parse("a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d")
+                    UnderMaintenance = false,
+                    RequiredSkillId = Guid.Parse("a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d")
                 },
                 new Machine
                 {
-                    Id = Guid.NewGuid(),
+                    Id = Guid.Parse("7d2c35b0-7b4f-4a3e-a7ff-59f4e2c8e65b"),
                     Name = "Milling Machine",
                     SerialNumber = "MM-654321",
                     LastMaintenanceDate = DateTime.Now.AddMonths(-6),
-                    SkillRequired = Guid.Parse("d4e5f6a7-b8c9-4d0e-1f2a-3b4c5d6e7f80")
+                    UnderMaintenance = false,
+                    RequiredSkillId = Guid.Parse("d4e5f6a7-b8c9-4d0e-1f2a-3b4c5d6e7f80")
                 }
             };
         }
@@ -58,7 +60,8 @@ namespace MachineMaintenanceScheduler.Features.Machines.Repositories
             existing.Name = machine.Name;
             existing.SerialNumber = machine.SerialNumber;
             existing.LastMaintenanceDate = machine.LastMaintenanceDate;
-            existing.SkillRequired = machine.SkillRequired;
+            existing.UnderMaintenance = machine.UnderMaintenance;
+            existing.RequiredSkill = machine.RequiredSkill;
             existing.MachineMaintenanceRuleId = machine.MachineMaintenanceRuleId;
             return Task.CompletedTask;
         }

@@ -5,7 +5,9 @@
         <h5 class="text-primary">@Machine.Name</h5>
         <p>
             <strong>Serial Number:</strong> @Machine.SerialNumber <br />
-            <strong>Last Maintenance:</strong> @Machine.LastMaintenanceDate.ToShortDateString() <br />
+            <strong>Last Maintenance:</strong> @Machine.LastMaintenanceDate?.ToShortDateString() <br />
+            <strong>Scheduled Date:</strong> @Machine.ScheduledDate?.ToShortDateString() <br />
+            <strong>Under Maintenance:</strong> @Machine.UnderMaintenance <br />
             <strong>Maintenance Rule:</strong> @Machine.MachineMaintenanceRule?.Name
         </p>
     </div>

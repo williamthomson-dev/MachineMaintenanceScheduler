@@ -6,6 +6,8 @@ using MachineMaintenanceScheduler.Features.Machines.Validators;
 using MachineMaintenanceScheduler.Features.MaintenanceRules.Interfaces;
 using MachineMaintenanceScheduler.Features.MaintenanceRules.Repositories;
 using MachineMaintenanceScheduler.Features.MaintenanceRules.Services;
+using MachineMaintenanceScheduler.Features.MaintenanceScheduling.Interfaces;
+using MachineMaintenanceScheduler.Features.MaintenanceScheduling.Services;
 using MachineMaintenanceScheduler.Features.Skills.Interfaces;
 using MachineMaintenanceScheduler.Features.Skills.Repositories;
 using MachineMaintenanceScheduler.Features.Skills.Services;
@@ -44,8 +46,9 @@ builder.Services.AddSingleton<IScheduleRepository, InMemoryScheduleRepository>()
 builder.Services.AddScoped<IMaintenanceRuleRepository, InMemoryMaintenanceRuleRepository>();
 builder.Services.AddScoped<IMaintenanceRuleService, MaintenanceRuleService>();
 
-builder.Services.AddScoped<IToastService, ToastService>();
+builder.Services.AddScoped<IMaintenanceScheduler, MaintenanceScheduler>();
 
+builder.Services.AddScoped<IToastService, ToastService>();
 
 var app = builder.Build();
 

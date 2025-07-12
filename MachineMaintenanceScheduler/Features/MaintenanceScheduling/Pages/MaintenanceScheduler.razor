@@ -1,0 +1,81 @@
+﻿@page "/maintenanceScheduler"
+
+@using MachineMaintenanceScheduler.Features.MaintenanceScheduling.Interfaces
+@using MachineMaintenanceScheduler.Features.MaintenanceScheduling.Models
+@using MachineMaintenanceScheduler.Features.MaintenanceScheduling.Services
+@using MachineMaintenanceScheduler.Features.Machines.Interfaces
+@using MachineMaintenanceScheduler.Shared.Components
+@using MachineMaintenanceScheduler.Shared.Modals
+@using MachineMaintenanceScheduler.Shared.Services
+@attribute [StreamRendering]
+@rendermode InteractiveServer
+
+<h3>Planned Maintenance Schedule</h3>
+
+@if (plannedTasks is null || !plannedTasks.Any())
+{
+    <p>No machines require maintenance at this time.</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Machine</th>
+                <th>Serial Number</th>
+                <th>Skill Required</th>
+                <th>Technician</th>
+                <th>Scheduled Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var task in plannedTasks)
+            {
+                <tr>
+                    <td>@task.Machine.Name</td>
+                    <td>@task.Machine.SerialNumber</td>
+                    <td>@task.Machine.RequiredSkill?.Name</td>
+                    <td>@task.Technician.FullName</td>
+                    <td>@task.MaintenanceScheduledDate.ToString("dd MMM yyyy HH:mm")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <button class="btn btn-success" @onclick="ConfirmSchedule">Confirm and Apply Schedule</button>
+}
+
+<ToastMessageModal IsVisible="@isToastVisible"
+            Message="@toastMessage"
+            ToastType="ToastType.Warning" />
+
+@code {
+    private List<PlannedMaintenanceTask>? plannedTasks;
+    private bool isToastVisible;
+    private string toastMessage = "";
+
+    [Inject] IMaintenanceScheduler _scheduler { get; set; } = default!;
+    [Inject] IMachineService _machineService { get; set; } = default!;
+    [Inject] IToastService _toastService { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        plannedTasks = await _scheduler.GeneratePlannedTasksAsync();
+    }
+
+    private async Task ConfirmSchedule()
+    {
+        if (plannedTasks is null) return;
+
+        foreach (var task in plannedTasks)
+        {
+            var machine = await _machineService.GetMachineByIdAsync(task.MachineId);
+            if (machine is null) continue;
+
+            machine.ScheduledDate = task.MaintenanceScheduledDate;
+            await _machineService.UpdateMachineAsync(machine);
+        }
+
+        _toastService.ShowToastMessage("Maintenance schedule confirmed and applied.");
+    }
+}

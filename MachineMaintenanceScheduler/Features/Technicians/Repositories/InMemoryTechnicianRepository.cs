@@ -14,7 +14,7 @@ namespace MachineMaintenanceScheduler.Features.Technicians.Repositories
             {
                 new Technician
                 {
-                    Id = Guid.NewGuid(),
+                    Id = Guid.Parse("6d2c35b0-7b4f-4a3e-a7ff-59f4e2c8e65b"),
                     Forename = "Douglas",
                     Surname = "Butcher",
                     Number = "07987654321",
@@ -22,7 +22,7 @@ namespace MachineMaintenanceScheduler.Features.Technicians.Repositories
                 },
                 new Technician
                 {
-                    Id = Guid.NewGuid(),
+                    Id = Guid.Parse("8d2c35b0-7b4f-4a3e-a7ff-59f4e2c8e65b"),
                     Forename = "James",
                     Surname = "Walker",
                     Number = "07123456789",

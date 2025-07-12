@@ -28,7 +28,10 @@ namespace MachineMaintenanceScheduler.Features.Machines.Services
                 Id = t.Id,
                 Name = t.Name,
                 SerialNumber = t.SerialNumber,
-                SkillRequired = t.SkillRequired,
+                RequiredSkill = t.RequiredSkill,
+                LastMaintenanceDate = t.LastMaintenanceDate,
+                UnderMaintenance = t.UnderMaintenance,
+                ScheduledDate = t.ScheduledDate,
                 MachineMaintenanceRuleId = t.MachineMaintenanceRuleId,
                 MachineMaintenanceRule = maintenanceRules.FirstOrDefault(s => s.Id == t.MachineMaintenanceRuleId)
             }).ToList();
