@@ -12,6 +12,11 @@
 
 <h3>Planned Maintenance Schedule</h3>
 
+<div class="alert alert-info mt-3">
+    <strong>Note:</strong> Only machines with an assigned <em>maintenance rule</em> and <em>required skill</em> can be scheduled.
+    A technician must also have a matching skill to be assigned to the task.
+</div>
+
 @if (plannedTasks is null || !plannedTasks.Any())
 {
     <p>No machines require maintenance at this time.</p>
@@ -36,7 +41,7 @@ else
                     <td>@task.Machine.SerialNumber</td>
                     <td>@task.Machine.RequiredSkill?.Name</td>
                     <td>@task.Technician.FullName</td>
-                    <td>@task.MaintenanceScheduledDate.ToString("dd MMM yyyy HH:mm")</td>
+                    <td>@task.MaintenanceScheduledDate.ToString("dd MMM yyyy")</td>
                 </tr>
             }
         </tbody>

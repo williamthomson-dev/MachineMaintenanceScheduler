@@ -5,6 +5,8 @@
 @using MachineMaintenanceScheduler.Features.Machines.Components
 @using MachineMaintenanceScheduler.Features.MaintenanceRules.Interfaces
 @using MachineMaintenanceScheduler.Features.MaintenanceRules.Models
+@using MachineMaintenanceScheduler.Features.Skills.Interfaces
+@using MachineMaintenanceScheduler.Features.Skills.Models
 @using MachineMaintenanceScheduler.Shared.Components
 @using MachineMaintenanceScheduler.Shared.Modals
 @using MachineMaintenanceScheduler.Shared.Services
@@ -34,10 +36,10 @@ else
 }
 
 <AddMachine IsVisible="@isAddMachineVisible" AllMachineMaintenanceRules="maintenanceRules"
-            OnClose="CloseAddModal" OnAdd="HandleMachineAdd" />
+            AllSkills="skills" OnClose="CloseAddModal" OnAdd="HandleMachineAdd" />
 
 <EditMachine IsVisible="@isUpdateMachineVisible" AllMachineMaintenanceRules="maintenanceRules"
-             MachineToEdit="selectedMachine"
+             AllSkills="skills" MachineToEdit="selectedMachine"
              OnClose="CloseUpdateModal" OnUpdate="HandleMachineUpdated" />
 
 <DeleteMachine IsVisible="@isDeleteMachineVisible"
@@ -52,6 +54,8 @@ else
     #region Variables
     private List<Machine> machines = new();
     private List<MachineMaintenanceRule> maintenanceRules = new();
+    private List<Skill> skills = new();
+
     private bool isAddMachineVisible = false;
     private bool isUpdateMachineVisible = false;
     private bool isDeleteMachineVisible = false;
@@ -65,6 +69,7 @@ else
     [Inject] public IMaintenanceRuleService _maintenanceRuleService { get; set; } = default!;
     [Inject] public IMachineService _machineService { get; set; } = default!;
     [Inject] public IMachineValidator _machineValidator { get; set; } = default!;
+    [Inject] public ISkillService _skillService { get; set; } = default!;
     [Inject] public IToastService _toastService { get; set; } = default!;
     #endregion
 
@@ -80,6 +85,7 @@ else
     {
         machines = await _machineService.GetMachinesWithMaintenanceRulesAsync();
         maintenanceRules = await _maintenanceRuleService.GetAllRulesAsync();
+        skills = await _skillService.GetAllSkillsAsync();
     }
     #endregion
 

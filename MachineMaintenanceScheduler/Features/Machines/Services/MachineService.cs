@@ -11,24 +11,29 @@ namespace MachineMaintenanceScheduler.Features.Machines.Services
     {
         private readonly IMachineRepository _machineRepository;
         private readonly IMaintenanceRuleRepository _maintenanceRuleRepository;
+        private readonly ISkillRepository _skillRepository;
 
-        public MachineService(IMachineRepository machineRepository, IMaintenanceRuleRepository maintenanceRuleRepository)
+        public MachineService(IMachineRepository machineRepository, IMaintenanceRuleRepository maintenanceRuleRepository,
+            ISkillRepository skillRepository)
         {
             _machineRepository = machineRepository;
             _maintenanceRuleRepository = maintenanceRuleRepository;
+            _skillRepository = skillRepository;
         }
 
         public async Task<List<Machine>> GetMachinesWithMaintenanceRulesAsync()
         {
             var machines = await _machineRepository.GetAllMachinesAsync();
             var maintenanceRules = await _maintenanceRuleRepository.GetAllRulesAsync();
+            var skills = await _skillRepository.GetAllSkillsAsync();
 
             var result = machines.Select(t => new Machine
             {
                 Id = t.Id,
                 Name = t.Name,
                 SerialNumber = t.SerialNumber,
-                RequiredSkill = t.RequiredSkill,
+                RequiredSkillId = t.RequiredSkillId,
+                RequiredSkill = skills.FirstOrDefault(s => s.Id == t.RequiredSkillId),
                 LastMaintenanceDate = t.LastMaintenanceDate,
                 UnderMaintenance = t.UnderMaintenance,
                 ScheduledDate = t.ScheduledDate,

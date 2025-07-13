@@ -2,6 +2,7 @@
 using MachineMaintenanceScheduler.Features.MaintenanceScheduling.Models;
 using MachineMaintenanceScheduler.Features.Machines.Interfaces;
 using MachineMaintenanceScheduler.Features.Technicians.Interfaces;
+using MachineMaintenanceScheduler.Features.MaintenanceRules.Models;
 
 namespace MachineMaintenanceScheduler.Features.MaintenanceScheduling.Services
 {
@@ -17,11 +18,6 @@ namespace MachineMaintenanceScheduler.Features.MaintenanceScheduling.Services
             _technicianService = technicianService;
         }
 
-        /// <summary>
-        /// Dummy implementation of a scheduling engine.
-        /// Randomly assigns a technician to each machine and picks a maintenance date 1–14 days from today.
-        /// This is a placeholder and should be replaced with real scheduling logic later.
-        /// </summary>
         public async Task<List<PlannedMaintenanceTask>> GeneratePlannedTasksAsync()
         {
             var machines = await _machineService.GetMachinesWithMaintenanceRulesAsync();
@@ -29,12 +25,40 @@ namespace MachineMaintenanceScheduler.Features.MaintenanceScheduling.Services
 
             var plannedTasks = new List<PlannedMaintenanceTask>();
 
-            if (!technicians.Any() || !machines.Any())
+            if (!machines.Any() || !technicians.Any())
                 return plannedTasks;
 
             foreach (var machine in machines)
             {
-                var technician = technicians[_random.Next(technicians.Count)];
+                // Skip machines currently under maintenance or missing maintenance rules
+                if (machine.UnderMaintenance || machine.MachineMaintenanceRule == null)
+                    continue;
+
+                // Determine next maintenance date
+                var lastDate = machine.LastMaintenanceDate ?? DateTime.Now;
+                var rule = machine.MachineMaintenanceRule;
+                var rawNextDate = rule.IntervalType switch
+                {
+                    MaintenanceIntervalType.Hours => lastDate.AddHours(rule.IntervalValue),
+                    MaintenanceIntervalType.Days => lastDate.AddDays(rule.IntervalValue),
+                    MaintenanceIntervalType.Weeks => lastDate.AddDays(7 * rule.IntervalValue),
+                    MaintenanceIntervalType.Months => lastDate.AddMonths(rule.IntervalValue),
+                    MaintenanceIntervalType.Years => lastDate.AddYears(rule.IntervalValue),
+                    _ => lastDate
+                };
+
+                // Make sure maintenance is scheduled in the future
+                var adjustedNextDate = rawNextDate <= DateTime.Now
+                    ? DateTime.Today.AddDays(1)
+                    : rawNextDate;
+
+                var nextMaintenanceDate = adjustedNextDate.Date;
+
+                // Match technician with exact skill
+                var technician = technicians.FirstOrDefault(t => t.SkillId == machine.RequiredSkillId);
+
+                if (technician == null)
+                    continue; // No available technician with required skill
 
                 plannedTasks.Add(new PlannedMaintenanceTask
                 {
@@ -43,11 +67,13 @@ namespace MachineMaintenanceScheduler.Features.MaintenanceScheduling.Services
                     Machine = machine,
                     TechnicianId = technician.Id,
                     Technician = technician,
-                    MaintenanceScheduledDate = DateTime.Today.AddDays(_random.Next(1, 15)) // 1–14 days from now
+                    MaintenanceScheduledDate = nextMaintenanceDate
                 });
             }
 
             return plannedTasks;
         }
+
+
     }
 }
