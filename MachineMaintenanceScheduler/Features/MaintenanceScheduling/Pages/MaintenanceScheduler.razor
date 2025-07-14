@@ -28,8 +28,9 @@ else
             <tr>
                 <th>Machine</th>
                 <th>Serial Number</th>
-                <th>Skill Required</th>
                 <th>Technician</th>
+                <th>Skill Required</th>
+                <th>Last Maintenance Date</th>
                 <th>Scheduled Date</th>
             </tr>
         </thead>
@@ -39,8 +40,9 @@ else
                 <tr>
                     <td>@task.Machine.Name</td>
                     <td>@task.Machine.SerialNumber</td>
-                    <td>@task.Machine.RequiredSkill?.Name</td>
                     <td>@task.Technician.FullName</td>
+                    <td>@task.Machine.RequiredSkill?.Name</td>
+                    <td>@task.Machine.LastMaintenanceDate?.ToString("dd MMM yyyy")</td>
                     <td>@task.MaintenanceScheduledDate.ToString("dd MMM yyyy")</td>
                 </tr>
             }
