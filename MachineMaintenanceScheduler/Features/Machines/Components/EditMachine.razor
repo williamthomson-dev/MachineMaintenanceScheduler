@@ -19,6 +19,9 @@
         <label>Serial No.:</label>
         <input class="form-control" @bind="EditableMachine.SerialNumber" />
 
+        <label>Last Maintenance Date:</label>
+        <input class="form-control" type="date" @bind="EditableMachine.LastMaintenanceDate" />
+
         @if (AllMachineMaintenanceRules.Any())
         {
             <label>Machine Maintenance Rule:</label>

@@ -19,6 +19,9 @@
         <label>Serial No.:</label>
         <input class="form-control" @bind="Machine.SerialNumber" />
 
+        <label>Last Maintenance Date:</label>
+        <input class="form-control" type="date" @bind="Machine.LastMaintenanceDate" />
+
         @if (AllMachineMaintenanceRules.Any())
         {
             <label>Machine Maintenance Rule:</label>
@@ -76,7 +79,8 @@
         {
             Id = Guid.NewGuid(),
             Name = "",
-            SerialNumber = ""
+            SerialNumber = "",
+            LastMaintenanceDate = DateTime.Today
         };
     }
 
