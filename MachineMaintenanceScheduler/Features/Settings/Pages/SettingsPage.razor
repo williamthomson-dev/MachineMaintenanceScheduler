@@ -1,0 +1,56 @@
+﻿@page "/settings"
+@using MachineMaintenanceScheduler.Features.MaintenanceRules.Pages
+@using MachineMaintenanceScheduler.Features.Settings.Models
+@using MachineMaintenanceScheduler.Features.Skills.Pages
+@using MachineMaintenanceScheduler.Features.Technicians.Pages
+@using MachineMaintenanceScheduler.Features.WorkingHours.Pages
+
+@attribute [StreamRendering]
+@rendermode InteractiveServer
+
+<div class="tabs">
+    <div class="tab @(activeTab == SettingsTab.Technicians ? "active" : "")"
+         @onclick="() => SetTab(SettingsTab.Technicians)">
+        Technicians
+    </div>
+    <div class="tab @(activeTab == SettingsTab.MaintenanceRules ? "active" : "")"
+         @onclick="() => SetTab(SettingsTab.MaintenanceRules)">
+        Maintenance Rules
+    </div>
+    <div class="tab @(activeTab == SettingsTab.Skills ? "active" : "")"
+         @onclick="() => SetTab(SettingsTab.Skills)">
+        Skills
+    </div>
+    <div class="tab @(activeTab == SettingsTab.Schedules ? "active" : "")"
+         @onclick="() => SetTab(SettingsTab.Schedules)">
+        Schedules
+    </div>
+</div>
+
+<div class="tab-content">
+    @switch (activeTab)
+    {
+        case SettingsTab.Technicians:
+            <TechniciansView />
+            break;
+        case SettingsTab.MaintenanceRules:
+            <MaintenanceRules />
+            break;
+        case SettingsTab.Skills:
+            <SkillsView />
+            break;
+        case SettingsTab.Schedules:
+            <WorkingHoursView />
+            break;
+    }
+</div>
+
+
+@code {
+    private SettingsTab activeTab = SettingsTab.Technicians;
+
+    private void SetTab(SettingsTab tab)
+    {
+        activeTab = tab;
+    }
+}
