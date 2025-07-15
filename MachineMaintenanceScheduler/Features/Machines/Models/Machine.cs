@@ -9,7 +9,7 @@ namespace MachineMaintenanceScheduler.Features.Machines.Models
         public string Name { get; set; } = string.Empty;
         public string SerialNumber { get; set; } = string.Empty;
         public DateTime? LastMaintenanceDate { get; set; }
-        public bool UnderMaintenance { get; set; } = false;
+        public bool IsUnderMaintenance { get; set; } = false;
         public DateTime? ScheduledDate { get; set; }
         public Guid RequiredSkillId { get; set; } = Guid.NewGuid(); // Skill required for maintenance
         public Skill? RequiredSkill { get; set; } 

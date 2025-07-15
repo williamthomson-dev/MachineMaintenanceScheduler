@@ -35,7 +35,7 @@ namespace MachineMaintenanceScheduler.Features.Machines.Services
                 RequiredSkillId = t.RequiredSkillId,
                 RequiredSkill = skills.FirstOrDefault(s => s.Id == t.RequiredSkillId),
                 LastMaintenanceDate = t.LastMaintenanceDate,
-                UnderMaintenance = t.UnderMaintenance,
+                IsUnderMaintenance = t.IsUnderMaintenance,
                 ScheduledDate = t.ScheduledDate,
                 MachineMaintenanceRuleId = t.MachineMaintenanceRuleId,
                 MachineMaintenanceRule = maintenanceRules.FirstOrDefault(s => s.Id == t.MachineMaintenanceRuleId)

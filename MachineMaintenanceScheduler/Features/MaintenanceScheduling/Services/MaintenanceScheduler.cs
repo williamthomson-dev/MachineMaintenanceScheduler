@@ -31,7 +31,7 @@ namespace MachineMaintenanceScheduler.Features.MaintenanceScheduling.Services
             foreach (var machine in machines)
             {
                 // Skip machines currently under maintenance or missing maintenance rules
-                if (machine.UnderMaintenance || machine.MachineMaintenanceRule == null)
+                if (machine.IsUnderMaintenance || machine.MachineMaintenanceRule == null)
                     continue;
 
                 // Determine next maintenance date
