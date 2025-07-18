@@ -41,7 +41,7 @@ namespace MachineMaintenanceScheduler.Features.Machines.Services
                 MachineMaintenanceRule = maintenanceRules.FirstOrDefault(s => s.Id == t.MachineMaintenanceRuleId)
             }).ToList();
 
-            return result;
+            return result.OrderBy(x => x.LastMaintenanceDate).ToList();
         }
 
         public Task<List<Machine>> GetAllMachinesAsync()

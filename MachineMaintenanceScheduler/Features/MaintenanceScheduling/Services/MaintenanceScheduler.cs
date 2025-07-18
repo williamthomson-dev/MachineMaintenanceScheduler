@@ -10,7 +10,6 @@ namespace MachineMaintenanceScheduler.Features.MaintenanceScheduling.Services
     {
         private readonly IMachineService _machineService;
         private readonly ITechnicianService _technicianService;
-        private readonly Random _random = new();
 
         public MaintenanceScheduler(IMachineService machineService, ITechnicianService technicianService)
         {
@@ -28,15 +27,17 @@ namespace MachineMaintenanceScheduler.Features.MaintenanceScheduling.Services
             if (!machines.Any() || !technicians.Any())
                 return plannedTasks;
 
+            // Track booked dates per technician
+            var technicianSchedule = new Dictionary<Guid, HashSet<DateTime>>();
+
             foreach (var machine in machines)
             {
-                // Skip machines currently under maintenance or missing maintenance rules
                 if (machine.IsUnderMaintenance || machine.MachineMaintenanceRule == null)
                     continue;
 
-                // Determine next maintenance date
                 var lastDate = machine.LastMaintenanceDate ?? DateTime.Now;
                 var rule = machine.MachineMaintenanceRule;
+
                 var rawNextDate = rule.IntervalType switch
                 {
                     MaintenanceIntervalType.Hours => lastDate.AddHours(rule.IntervalValue),
@@ -47,18 +48,27 @@ namespace MachineMaintenanceScheduler.Features.MaintenanceScheduling.Services
                     _ => lastDate
                 };
 
-                // Make sure maintenance is scheduled in the future
-                var adjustedNextDate = rawNextDate <= DateTime.Now
+                var scheduledDate = rawNextDate <= DateTime.Now
                     ? DateTime.Today.AddDays(1)
-                    : rawNextDate;
+                    : rawNextDate.Date;
 
-                var nextMaintenanceDate = adjustedNextDate.Date;
-
-                // Match technician with exact skill
+                // Find technician with the exact skill
                 var technician = technicians.FirstOrDefault(t => t.SkillId == machine.RequiredSkillId);
-
                 if (technician == null)
-                    continue; // No available technician with required skill
+                    continue;
+
+                // Ensure dictionary entry
+                if (!technicianSchedule.ContainsKey(technician.Id))
+                    technicianSchedule[technician.Id] = new HashSet<DateTime>();
+
+                // Find next available date for this technician
+                while (technicianSchedule[technician.Id].Contains(scheduledDate))
+                {
+                    scheduledDate = scheduledDate.AddDays(1);
+                }
+
+                // Schedule and track it
+                technicianSchedule[technician.Id].Add(scheduledDate);
 
                 plannedTasks.Add(new PlannedMaintenanceTask
                 {
@@ -67,13 +77,12 @@ namespace MachineMaintenanceScheduler.Features.MaintenanceScheduling.Services
                     Machine = machine,
                     TechnicianId = technician.Id,
                     Technician = technician,
-                    MaintenanceScheduledDate = nextMaintenanceDate
+                    MaintenanceScheduledDate = scheduledDate
                 });
             }
 
             return plannedTasks;
         }
-
 
     }
 }
