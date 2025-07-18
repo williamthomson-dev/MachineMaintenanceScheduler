@@ -1,5 +1,7 @@
 ﻿@page "/maintenanceScheduler"
 
+@using System.Globalization
+@using MachineMaintenanceScheduler.Features.MaintenanceScheduling.Components
 @using MachineMaintenanceScheduler.Features.MaintenanceScheduling.Interfaces
 @using MachineMaintenanceScheduler.Features.MaintenanceScheduling.Models
 @using MachineMaintenanceScheduler.Features.MaintenanceScheduling.Services
@@ -23,38 +25,18 @@
 }
 else
 {
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Machine</th>
-                <th>Serial Number</th>
-                <th>Technician</th>
-                <th>Skill Required</th>
-                <th>Last Maintenance Date</th>
-                <th>Scheduled Date</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var task in plannedTasks)
-            {
-                <tr>
-                    <td>@task.Machine.Name</td>
-                    <td>@task.Machine.SerialNumber</td>
-                    <td>@task.Technician.FullName</td>
-                    <td>@task.Machine.RequiredSkill?.Name</td>
-                    <td>@task.Machine.LastMaintenanceDate?.ToString("dd MMM yyyy")</td>
-                    <td>@task.MaintenanceScheduledDate.ToString("dd MMM yyyy")</td>
-                </tr>
-            }
-        </tbody>
-    </table>
 
-    <button class="btn btn-success" @onclick="ConfirmSchedule">Confirm and Apply Schedule</button>
+    <button class="btn btn-success mt-4" @onclick="ConfirmSchedule">Confirm and Apply Schedule</button>
+
+    @foreach (var group in groupedTasks)
+    {
+        <ScheduledDayGroup ScheduledDate="group.Key" Tasks="group.ToList()" />
+    }
 }
 
 <ToastMessageModal IsVisible="@isToastVisible"
-            Message="@toastMessage"
-            ToastType="ToastType.Warning" />
+                   Message="@toastMessage"
+                   ToastType="ToastType.Warning" />
 
 @code {
     private List<PlannedMaintenanceTask>? plannedTasks;
@@ -65,9 +47,19 @@ else
     [Inject] IMachineService _machineService { get; set; } = default!;
     [Inject] IToastService _toastService { get; set; } = default!;
 
+    private List<IGrouping<DateTime, PlannedMaintenanceTask>> groupedTasks = new();
+
     protected override async Task OnInitializedAsync()
     {
         plannedTasks = await _scheduler.GeneratePlannedTasksAsync();
+
+        if (plannedTasks != null)
+        {
+            groupedTasks = plannedTasks
+                .GroupBy(t => t.MaintenanceScheduledDate.Date)
+                .OrderBy(g => g.Key)
+                .ToList();
+        }
     }
 
     private async Task ConfirmSchedule()

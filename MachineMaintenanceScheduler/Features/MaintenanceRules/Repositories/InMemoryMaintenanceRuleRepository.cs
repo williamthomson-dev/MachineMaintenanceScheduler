@@ -8,6 +8,34 @@ namespace MachineMaintenanceScheduler.Features.MaintenanceRules.Repositories
     {
         private readonly List<MachineMaintenanceRule> _machineMaintenanceRules = new();
 
+        public InMemoryMaintenanceRuleRepository()
+        {
+            _machineMaintenanceRules.AddRange(new List<MachineMaintenanceRule>
+            {
+                new MachineMaintenanceRule
+                {
+                    Id = Guid.Parse("c85bff1d-2c41-4a4b-be63-960182d6401a"),
+                    Name = "Every 100 Hours",
+                    IntervalValue = 100,
+                    IntervalType = MaintenanceIntervalType.Hours
+                },
+                new MachineMaintenanceRule
+                {
+                    Id = Guid.Parse("9b8f47f5-497d-446b-a981-3df82c6213ab"),
+                    Name = "Every 30 Days",
+                    IntervalValue = 30,
+                    IntervalType = MaintenanceIntervalType.Days
+                },
+                new MachineMaintenanceRule
+                {
+                    Id = Guid.Parse("e863fd8a-155f-4d5b-933a-6649663e2bf2"),
+                    Name = "Every 1 Year",
+                    IntervalValue = 1,
+                    IntervalType = MaintenanceIntervalType.Years
+                }
+            });
+
+        }
         public Task<List<MachineMaintenanceRule>> GetAllRulesAsync()
         {
             return Task.FromResult(_machineMaintenanceRules);

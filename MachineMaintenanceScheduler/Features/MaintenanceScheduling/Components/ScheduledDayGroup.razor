@@ -1,0 +1,24 @@
+﻿@using MachineMaintenanceScheduler.Features.MaintenanceScheduling.Models
+@using System.Globalization
+@inherits LayoutComponentBase
+
+
+<div class="mt-4">
+    <h5 class="text-primary">@ScheduledDate.ToString("dddd, dd MMMM yyyy", CultureInfo.InvariantCulture)</h5>
+    <ul class="list-group">
+        @foreach (var task in Tasks)
+        {
+            <li class="list-group-item">
+                <strong>@task.Machine.Name</strong> (Serial: @task.Machine.SerialNumber)<br />
+                Technician: @task.Technician.FullName<br />
+                Skill: @task.Machine.RequiredSkill?.Name<br />
+                Last Maintained: @task.Machine.LastMaintenanceDate?.ToString("dd MMM yyyy")
+            </li>
+        }
+    </ul>
+</div>
+
+@code {
+    [Parameter] public DateTime ScheduledDate { get; set; }
+    [Parameter] public List<PlannedMaintenanceTask> Tasks { get; set; } = new();
+}
