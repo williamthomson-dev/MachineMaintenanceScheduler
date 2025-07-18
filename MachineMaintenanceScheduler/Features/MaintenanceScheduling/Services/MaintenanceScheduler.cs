@@ -27,10 +27,10 @@ namespace MachineMaintenanceScheduler.Features.MaintenanceScheduling.Services
             if (!machines.Any() || !technicians.Any())
                 return plannedTasks;
 
-            // Track booked dates per technician
+            // Track each technician’s scheduled dates
             var technicianSchedule = new Dictionary<Guid, HashSet<DateTime>>();
 
-            foreach (var machine in machines)
+            foreach (var machine in machines.OrderBy(x =>x.LastMaintenanceDate))
             {
                 if (machine.IsUnderMaintenance || machine.MachineMaintenanceRule == null)
                     continue;
@@ -52,33 +52,46 @@ namespace MachineMaintenanceScheduler.Features.MaintenanceScheduling.Services
                     ? DateTime.Today.AddDays(1)
                     : rawNextDate.Date;
 
-                // Find technician with the exact skill
-                var technician = technicians.FirstOrDefault(t => t.SkillId == machine.RequiredSkillId);
-                if (technician == null)
+                // Get all technicians with the required skill
+                var skilledTechnicians = technicians
+                    .Where(t => t.SkillId == machine.RequiredSkillId)
+                    .ToList();
+
+                if (!skilledTechnicians.Any())
                     continue;
 
-                // Ensure dictionary entry
-                if (!technicianSchedule.ContainsKey(technician.Id))
-                    technicianSchedule[technician.Id] = new HashSet<DateTime>();
+                bool scheduled = false;
 
-                // Find next available date for this technician
-                while (technicianSchedule[technician.Id].Contains(scheduledDate))
+                // Try to assign the first available technician
+                while (!scheduled)
                 {
-                    scheduledDate = scheduledDate.AddDays(1);
+                    foreach (var tech in skilledTechnicians)
+                    {
+                        if (!technicianSchedule.ContainsKey(tech.Id))
+                            technicianSchedule[tech.Id] = new HashSet<DateTime>();
+
+                        if (!technicianSchedule[tech.Id].Contains(scheduledDate))
+                        {
+                            technicianSchedule[tech.Id].Add(scheduledDate);
+
+                            plannedTasks.Add(new PlannedMaintenanceTask
+                            {
+                                Id = Guid.NewGuid(),
+                                MachineId = machine.Id,
+                                Machine = machine,
+                                TechnicianId = tech.Id,
+                                Technician = tech,
+                                MaintenanceScheduledDate = scheduledDate
+                            });
+
+                            scheduled = true;
+                            break;
+                        }
+                    }
+
+                    if (!scheduled)
+                        scheduledDate = scheduledDate.AddDays(1); // all booked — try next day
                 }
-
-                // Schedule and track it
-                technicianSchedule[technician.Id].Add(scheduledDate);
-
-                plannedTasks.Add(new PlannedMaintenanceTask
-                {
-                    Id = Guid.NewGuid(),
-                    MachineId = machine.Id,
-                    Machine = machine,
-                    TechnicianId = technician.Id,
-                    Technician = technician,
-                    MaintenanceScheduledDate = scheduledDate
-                });
             }
 
             return plannedTasks;

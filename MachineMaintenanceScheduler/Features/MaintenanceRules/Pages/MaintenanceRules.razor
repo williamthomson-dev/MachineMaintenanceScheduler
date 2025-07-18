@@ -30,8 +30,8 @@ else
                     <td>@rule.Name</td>
                     <td>@rule.IntervalValue @rule.IntervalType</td>
                     <td>
-                        <button class="btn btn-sm btn-outline-primary" @onclick="() => ShowEditModal(rule)">Edit</button>
-                        <button class="btn btn-sm btn-outline-danger" @onclick="() => ShowDeleteModal(rule)">Delete</button>
+                        <button class="btn btn-info btn-sm" @onclick="() => ShowEditModal(rule)">Edit</button>
+                        <button class="btn btn-danger btn-sm" @onclick="() => ShowDeleteModal(rule)">Delete</button>
                     </td>
                 </tr>
             }
