@@ -25,12 +25,33 @@
 }
 else
 {
-
     <button class="btn btn-success mt-4" @onclick="ConfirmSchedule">Confirm and Apply Schedule</button>
 
-    @foreach (var group in groupedTasks)
+    @if (overdueTasks.Any())
     {
-        <ScheduledDayGroup ScheduledDate="group.Key" Tasks="group.ToList()" />
+        <h4 class="text-danger mt-5">Overdue Maintenance</h4>
+        @foreach (var group in overdueTasks.OrderBy(g => g.Key))
+        {
+            <ScheduledDayGroup ScheduledDate="group.Key" Tasks="group.Value" />
+        }
+    }
+
+    @if (thisWeekTasks.Any())
+    {
+        <h4 class="text-warning mt-5">Scheduled This Week</h4>
+        @foreach (var group in thisWeekTasks.OrderBy(g => g.Key))
+        {
+            <ScheduledDayGroup ScheduledDate="group.Key" Tasks="group.Value" />
+        }
+    }
+
+    @if (laterTasks.Any())
+    {
+        <h4 class="text-secondary mt-5">Scheduled Later</h4>
+        @foreach (var group in laterTasks.OrderBy(g => g.Key))
+        {
+            <ScheduledDayGroup ScheduledDate="group.Key" Tasks="group.Value" />
+        }
     }
 }
 
@@ -43,11 +64,13 @@ else
     private bool isToastVisible;
     private string toastMessage = "";
 
+    private Dictionary<DateTime, List<PlannedMaintenanceTask>> overdueTasks = new();
+    private Dictionary<DateTime, List<PlannedMaintenanceTask>> thisWeekTasks = new();
+    private Dictionary<DateTime, List<PlannedMaintenanceTask>> laterTasks = new();
+
     [Inject] IMaintenanceScheduler _scheduler { get; set; } = default!;
     [Inject] IMachineService _machineService { get; set; } = default!;
     [Inject] IToastService _toastService { get; set; } = default!;
-
-    private List<IGrouping<DateTime, PlannedMaintenanceTask>> groupedTasks = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -55,11 +78,29 @@ else
 
         if (plannedTasks != null)
         {
-            groupedTasks = plannedTasks
-                .GroupBy(t => t.MaintenanceScheduledDate.Date)
-                .OrderBy(g => g.Key)
-                .ToList();
+            CategorizeTasks(plannedTasks);
         }
+    }
+
+    private void CategorizeTasks(List<PlannedMaintenanceTask> tasks)
+    {
+        var today = DateTime.Today;
+        var endOfWeek = today.AddDays(7);
+
+        overdueTasks = tasks
+            .Where(t => t.IsOverdue)
+            .GroupBy(t => t.MaintenanceScheduledDate.Date)
+            .ToDictionary(g => g.Key, g => g.ToList());
+
+        thisWeekTasks = tasks
+            .Where(t => !t.IsOverdue && t.MaintenanceScheduledDate.Date <= endOfWeek)
+            .GroupBy(t => t.MaintenanceScheduledDate.Date)
+            .ToDictionary(g => g.Key, g => g.ToList());
+
+        laterTasks = tasks
+            .Where(t => !t.IsOverdue && t.MaintenanceScheduledDate.Date > endOfWeek)
+            .GroupBy(t => t.MaintenanceScheduledDate.Date)
+            .ToDictionary(g => g.Key, g => g.ToList());
     }
 
     private async Task ConfirmSchedule()

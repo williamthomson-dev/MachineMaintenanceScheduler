@@ -11,5 +11,6 @@ namespace MachineMaintenanceScheduler.Features.MaintenanceScheduling.Models
         public Machine Machine { get; set; } = default!;
         public Guid TechnicianId { get; set; } 
         public Technician Technician { get; set; } = default!;
+        public bool IsOverdue { get; set; }   
     }
 }

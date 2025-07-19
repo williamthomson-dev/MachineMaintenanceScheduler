@@ -48,6 +48,8 @@ namespace MachineMaintenanceScheduler.Features.MaintenanceScheduling.Services
                     _ => lastDate
                 };
 
+                bool isOverdue = rawNextDate < DateTime.Now;
+
                 var scheduledDate = rawNextDate <= DateTime.Now
                     ? DateTime.Today.AddDays(1)
                     : rawNextDate.Date;
@@ -81,7 +83,8 @@ namespace MachineMaintenanceScheduler.Features.MaintenanceScheduling.Services
                                 Machine = machine,
                                 TechnicianId = tech.Id,
                                 Technician = tech,
-                                MaintenanceScheduledDate = scheduledDate
+                                MaintenanceScheduledDate = scheduledDate,
+                                IsOverdue = isOverdue
                             });
 
                             scheduled = true;
