@@ -1,4 +1,5 @@
-﻿@using MachineMaintenanceScheduler.Features.Machines.Models
+﻿@using MachineMaintenanceScheduler.Features.Machines.Interfaces
+@using MachineMaintenanceScheduler.Features.Machines.Models
 
 <div class="card h-100 shadow-sm position-relative">
 
@@ -16,32 +17,50 @@
             <ul class="list-unstyled fs-6">
                 <li><strong>Scheduled:</strong> @Machine.ScheduledDate?.ToShortDateString()</li>
                 <li><strong>Last Maintenance:</strong> @Machine.LastMaintenanceDate?.ToShortDateString()</li>
-                <li><strong>Under Maintenance:</strong> @Machine.IsUnderMaintenance</li>
                 <li><strong>Required Skill:</strong> @Machine.RequiredSkill?.Name</li>
                 <li><strong>Serial Number:</strong> @Machine.SerialNumber</li>
                 <li><strong>Rule:</strong> @Machine.MachineMaintenanceRule?.Name</li>
             </ul>
         </div>
 
-        <div class="mt-3 d-flex justify-content-between">
-            <button class="btn btn-sm btn-outline-primary" @onclick="() => OnEdit.InvokeAsync(Machine)">
-                Edit
-            </button>
-            <button class="btn btn-sm btn-outline-danger" @onclick="() => OnDelete.InvokeAsync(Machine)">
-                Delete
-            </button>
+        <div class="mt-3 row g-2">
+            <div class="col-4">
+                <button class="btn btn-sm @GetStartStopButtonClass() w-100" @onclick="ToggleMaintenance">
+                    @GetStartStopText()
+                </button>
+            </div>
+            <div class="col-4">
+                <button class="btn btn-sm btn-outline-primary w-100" @onclick="() => OnEdit.InvokeAsync(Machine)">
+                    Edit
+                </button>
+            </div>
+            <div class="col-4">
+                <button class="btn btn-sm btn-outline-danger w-100" @onclick="() => OnDelete.InvokeAsync(Machine)">
+                    Delete
+                </button>
+            </div>
         </div>
     </div>
 </div>
-
-<style>
-    .flipped-icon {
-        transform: scaleX(-1); /* Flips the icon horizontally */
-    }
-</style>
 
 @code {
     [Parameter] public Machine Machine { get; set; } = default!;
     [Parameter] public EventCallback<Machine> OnEdit { get; set; }
     [Parameter] public EventCallback<Machine> OnDelete { get; set; }
+
+    [Inject] public IMachineService _machineService { get; set; } = default!;
+
+
+    private async Task ToggleMaintenance()
+    {
+        Machine.IsUnderMaintenance = !Machine.IsUnderMaintenance;
+        if (Machine.IsUnderMaintenance == false)
+            Machine.LastMaintenanceDate = DateTime.Now; 
+
+        await _machineService.UpdateMachineAsync(Machine);
+    }
+
+    private string GetStartStopText() => Machine.IsUnderMaintenance ? "Stop" : "Start";
+
+    private string GetStartStopButtonClass() => Machine.IsUnderMaintenance ? "btn-outline-warning" : "btn-outline-success";
 }

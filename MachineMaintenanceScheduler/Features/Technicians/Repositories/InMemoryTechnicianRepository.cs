@@ -26,8 +26,24 @@ namespace MachineMaintenanceScheduler.Features.Technicians.Repositories
                     Forename = "James",
                     Surname = "Walker",
                     Number = "07123456789",
+                    SkillId = Guid.Parse("b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e")
+                },
+                new Technician
+                {
+                    Id = Guid.Parse("6d2c35b0-7b4f-4a3e-a7ff-59f4e2c8e65b"),
+                    Forename = "Robert",
+                    Surname = "Walker",
+                    Number = "07918273645",
+                    SkillId = Guid.Parse("c3d4e5f6-a7b8-4c9d-0e1f-2a3b4c5d6e7f")
+                },
+                new Technician
+                {
+                    Id = Guid.Parse("8d2c35b0-7b4f-4a3e-a7ff-59f4e2c8e65b"),
+                    Forename = "Betty",
+                    Surname = "Walker",
+                    Number = "07654321987",
                     SkillId = Guid.Parse("d4e5f6a7-b8c9-4d0e-1f2a-3b4c5d6e7f80")
-                }
+                },
             };
         }
 
