@@ -47,6 +47,7 @@ builder.Services.AddScoped<IMaintenanceRuleRepository, InMemoryMaintenanceRuleRe
 builder.Services.AddScoped<IMaintenanceRuleService, MaintenanceRuleService>();
 
 builder.Services.AddScoped<IMaintenanceScheduler, MaintenanceScheduler>();
+builder.Services.AddScoped<IMaintenanceTaskCategorizer, MaintenanceTaskCategorizer>();
 
 builder.Services.AddScoped<IToastService, ToastService>();
 

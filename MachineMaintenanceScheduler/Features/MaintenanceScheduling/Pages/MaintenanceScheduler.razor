@@ -70,6 +70,7 @@ else
 
     [Inject] IMaintenanceScheduler _scheduler { get; set; } = default!;
     [Inject] IMachineService _machineService { get; set; } = default!;
+    [Inject] IMaintenanceTaskCategorizer _maintenanceTaskCategorizer { get; set; } = default!;
     [Inject] IToastService _toastService { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
@@ -78,29 +79,11 @@ else
 
         if (plannedTasks != null)
         {
-            CategorizeTasks(plannedTasks);
+            var (overdue, thisWeek, later) = _maintenanceTaskCategorizer.Categorize(plannedTasks);
+            overdueTasks = overdue;
+            thisWeekTasks = thisWeek;
+            laterTasks = later;
         }
-    }
-
-    private void CategorizeTasks(List<PlannedMaintenanceTask> tasks)
-    {
-        var today = DateTime.Today;
-        var endOfWeek = today.AddDays(7);
-
-        overdueTasks = tasks
-            .Where(t => t.IsOverdue)
-            .GroupBy(t => t.MaintenanceScheduledDate.Date)
-            .ToDictionary(g => g.Key, g => g.ToList());
-
-        thisWeekTasks = tasks
-            .Where(t => !t.IsOverdue && t.MaintenanceScheduledDate.Date <= endOfWeek)
-            .GroupBy(t => t.MaintenanceScheduledDate.Date)
-            .ToDictionary(g => g.Key, g => g.ToList());
-
-        laterTasks = tasks
-            .Where(t => !t.IsOverdue && t.MaintenanceScheduledDate.Date > endOfWeek)
-            .GroupBy(t => t.MaintenanceScheduledDate.Date)
-            .ToDictionary(g => g.Key, g => g.ToList());
     }
 
     private async Task ConfirmSchedule()
