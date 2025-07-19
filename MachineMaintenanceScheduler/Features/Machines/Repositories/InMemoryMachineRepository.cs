@@ -27,7 +27,7 @@ namespace MachineMaintenanceScheduler.Features.Machines.Repositories
                 new Machine
                 {
                     Id = Guid.Parse("597294eb-fb5d-4356-80f2-a1b58b046b2d"),
-                    Name = "CNC Milling Machine",
+                    Name = "Milling Machine",
                     SerialNumber = "CNC-400",
                     LastMaintenanceDate = DateTime.Now.AddHours(-310),
                     IsUnderMaintenance = false,
@@ -40,7 +40,7 @@ namespace MachineMaintenanceScheduler.Features.Machines.Repositories
                     Name = "Air Compressor",
                     SerialNumber = "AC-150",
                     LastMaintenanceDate = DateTime.Now.AddHours(-267),
-                    IsUnderMaintenance = false,
+                    IsUnderMaintenance = true,
                     RequiredSkillId = Guid.Parse("d4e5f6a7-b8c9-4d0e-1f2a-3b4c5d6e7f80"),
                     MachineMaintenanceRuleId = Guid.Parse("e863fd8a-155f-4d5b-933a-6649663e2bf2")
                 },
@@ -110,7 +110,7 @@ namespace MachineMaintenanceScheduler.Features.Machines.Repositories
                     Name = "Industrial Fan",
                     SerialNumber = "IF-120",
                     LastMaintenanceDate = DateTime.Now.AddHours(-211),
-                    IsUnderMaintenance = false,
+                    IsUnderMaintenance = true,
                     RequiredSkillId = Guid.Parse("a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d"),
                     MachineMaintenanceRuleId = Guid.Parse("c85bff1d-2c41-4a4b-be63-960182d6401a")
                 },

@@ -1,23 +1,44 @@
 ﻿@using MachineMaintenanceScheduler.Features.Machines.Models
 
-<div class="machine-card border rounded p-3 shadow-sm bg-light h-100 w-100 d-flex flex-column justify-content-between">
-    <div>
-        <h5 class="text-primary">@Machine.Name</h5>
-        <p>
-            <strong>Serial Number:</strong> @Machine.SerialNumber <br />
-            <strong>Last Maintenance:</strong> @Machine.LastMaintenanceDate?.ToShortDateString() <br />
-            <strong>Scheduled Date:</strong> @Machine.ScheduledDate?.ToShortDateString() <br />
-            <strong>Under Maintenance:</strong> @Machine.IsUnderMaintenance <br />
-            <strong>Skill Name:</strong> @Machine.RequiredSkill?.Name <br />
-            <strong>Maintenance Rule:</strong> @Machine.MachineMaintenanceRule?.Name
-        </p>
-    </div>
+<div class="card h-100 shadow-sm position-relative">
 
-    <div class="mt-3 d-flex justify-content-between">
-        <button class="btn btn-sm btn-outline-primary" @onclick="() => OnEdit.InvokeAsync(Machine)">Edit</button>
-        <button class="btn btn-sm btn-outline-danger" @onclick="() => OnDelete.InvokeAsync(Machine)">Delete</button>
+    @if (Machine.IsUnderMaintenance)
+    {
+        <i class="bi bi-wrench text-secondary position-absolute top-0 end-0 m-3 flipped-icon fs-4"></i>
+    }
+
+    <div class="card-body d-flex flex-column justify-content-between">
+        <div>
+            <h5 class="card-title text-primary fs-5">
+                @Machine.Name
+            </h5>
+
+            <ul class="list-unstyled fs-6">
+                <li><strong>Scheduled:</strong> @Machine.ScheduledDate?.ToShortDateString()</li>
+                <li><strong>Last Maintenance:</strong> @Machine.LastMaintenanceDate?.ToShortDateString()</li>
+                <li><strong>Under Maintenance:</strong> @Machine.IsUnderMaintenance</li>
+                <li><strong>Required Skill:</strong> @Machine.RequiredSkill?.Name</li>
+                <li><strong>Serial Number:</strong> @Machine.SerialNumber</li>
+                <li><strong>Rule:</strong> @Machine.MachineMaintenanceRule?.Name</li>
+            </ul>
+        </div>
+
+        <div class="mt-3 d-flex justify-content-between">
+            <button class="btn btn-sm btn-outline-primary" @onclick="() => OnEdit.InvokeAsync(Machine)">
+                Edit
+            </button>
+            <button class="btn btn-sm btn-outline-danger" @onclick="() => OnDelete.InvokeAsync(Machine)">
+                Delete
+            </button>
+        </div>
     </div>
 </div>
+
+<style>
+    .flipped-icon {
+        transform: scaleX(-1); /* Flips the icon horizontally */
+    }
+</style>
 
 @code {
     [Parameter] public Machine Machine { get; set; } = default!;
